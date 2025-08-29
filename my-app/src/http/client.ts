@@ -8,3 +8,18 @@ export const api = axios.create({
       Accept: 'application/json' 
     }
 })
+
+api.interceptors.request.use(
+ (config)=>{
+  const token = localStorage.getItem('auth-token')
+  if(token){
+    config.headers.Authorization = `Bearer ${token}`
+  }else{
+    console.warn('No auth token found'); 
+  }
+  return config
+ },
+ (error)=>{
+  return Promise.reject(error)
+ }
+)
