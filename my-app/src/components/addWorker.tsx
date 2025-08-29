@@ -25,6 +25,7 @@ export function AddWorker({
   ...props
 }: AddWorkerProps){
   const [formData, setFormData] = useState<Worker>({
+    _id: '',
     name: '',
     phone: 0,
     role: '',
@@ -37,9 +38,11 @@ export function AddWorker({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (onFormSubmit) {
-      onFormSubmit(formData);
+      const { _id, ...workerData } = formData;
+       onFormSubmit(workerData as any);
     }
     setFormData({
+      _id: '',
       name: '',
       phone: 0,
       role: '',
