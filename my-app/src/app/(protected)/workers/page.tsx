@@ -1,17 +1,35 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { WorkersTable } from '@/components/workerTable'
 import { AddWorker } from '@/components/addWorker'
-import { useMutation } from "@tanstack/react-query"
-import { creatWorker } from '../../../http/api'
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { creatWorker, getWorkers } from '../../../http/api'
 import { Worker } from '@/store'
 export function CreateWorker(){
     const [workers, setWorkers] = useState<any[]>([]); 
+
+    const {data: workersData, refetch} = useQuery({
+        queryKey: ['workers'],
+        queryFn: getWorkers,
+        enabled: false,
+    })
+
+    useEffect(()=>{
+      refetch()
+    }, [])
+
+     useEffect(() => {
+        if (workersData?.data) {
+            setWorkers(workersData.data);
+        }
+    }, [workersData]);
+
 
     const {mutate: userMutate} = useMutation({
         mutationKey: ['worker'],
         mutationFn: creatWorker, 
         onSuccess: (response)=>{
+        refetch();
       if (response.data) {
         setWorkers(prevWorkers => [...prevWorkers, response.data]);
       }
