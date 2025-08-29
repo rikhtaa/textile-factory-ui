@@ -26,7 +26,6 @@ export function LoginForm({
     password: ''
   });
 
-//  const LoginPage = ()=>{
   const {setUser} = useAuthStore()
   const router = useRouter();
 
@@ -34,9 +33,13 @@ export function LoginForm({
   const {mutate}=useMutation({
     mutationKey: ['login'],
     mutationFn: login,
-    onSuccess: (userData)=>{
-      setUser(userData.data);
-      router.push('/dashboard')
+    onSuccess: (response)=>{
+       if (response.data.token) {
+      localStorage.setItem('auth-token', response.data.token);
+    }
+    
+    setUser(response.data.user);
+    router.push('/dashboard');
     },
     onError: (error) => {
          console.error('Login failed:', error);

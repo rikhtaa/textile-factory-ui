@@ -11,18 +11,15 @@ export function CreateWorker(){
     const {mutate: userMutate} = useMutation({
         mutationKey: ['worker'],
         mutationFn: creatWorker, 
-        onSuccess: ()=>{
-          console.log('create Worker successfully')
+        onSuccess: (response)=>{
+      if (response.data) {
+        setWorkers(prevWorkers => [...prevWorkers, response.data]);
+      }
         }
     })
 
     const handleFormData = (formData: Worker) => {
-        console.log('New worker:', formData);
-        
-        // Call mutate here with the form data
         userMutate(formData);
-        
-        // Optional: Update local state immediately (optimistic update)
         setWorkers(prevWorkers => [...prevWorkers, formData]); 
     };
 
@@ -31,7 +28,6 @@ export function CreateWorker(){
       <div className='flex flex-col gap-7 w-[85%] py-[1rem]'>
         <h2 className='text-black text-4xl font-bold'>Workers</h2>
           <AddWorker onFormSubmit={handleFormData}/>
-          {/* Pass the workers data to WorkersTable */}
          <WorkersTable workers={workers}/>   
      </div>
       </div>
