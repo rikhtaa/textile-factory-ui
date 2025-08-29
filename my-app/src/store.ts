@@ -2,6 +2,7 @@ import { create } from "zustand"
 import { devtools  } from "zustand/middleware"
 
 export interface Worker {
+  _id: string;
   name: string;
   phone: number;
   role: string;
