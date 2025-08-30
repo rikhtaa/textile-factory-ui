@@ -19,6 +19,14 @@ export interface Quality{
   effectiveFrom: Date
 }
 
+export interface Loom {
+  _id: string;
+  loomNumber: string;
+  section?: string;
+  status: string;
+  beamInfo?: string;
+}
+
 export interface LoginFormValues {
   email: string
   password: string
