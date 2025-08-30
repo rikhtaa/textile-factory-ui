@@ -12,6 +12,13 @@ export interface Worker {
   password: string;
 }
 
+export interface Quality{
+  _id: string
+  name: string
+  pricePerMeter: number
+  effectiveFrom: Date
+}
+
 export interface LoginFormValues {
   email: string
   password: string
