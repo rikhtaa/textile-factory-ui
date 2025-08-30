@@ -1,15 +1,21 @@
 'use client'
 import React from 'react'
-import { createLoom, createQuality } from '@/http/api';
-import { Loom, Quality } from '@/store';
-import { useMutation } from '@tanstack/react-query';
+import { createLoom, getLooms } from '@/http/api';
+import { Loom } from '@/store';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { AddLoom } from '@/components/addLoom';
+import { LoomTable } from '@/components/LoomTable';
 export default function LoomsPage(){
+     const {data: loomsData, refetch} = useQuery({
+        queryKey: ['looms'],
+        queryFn: getLooms,
+    })
+
    const {mutate: userMutate} = useMutation({
         mutationKey: ['loom'],
         mutationFn: createLoom, 
         onSuccess: ()=>{
-        console.log("created Loom")
+        refetch();
         }
     })
 
@@ -22,6 +28,7 @@ return (
              <div className='flex flex-col gap-7 w-[85%] py-[1rem]'>
                <h2 className='text-black text-4xl font-bold'>Qualities</h2>
                 <AddLoom onFormSubmit={handleFormData}/>
+                <LoomTable  looms={loomsData?.data || []}/>
             </div>
              </div>
     
