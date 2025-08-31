@@ -16,6 +16,15 @@ export interface BulkProductionImport{
   records: CreateProduction[];
 }
 
+export interface ProductionRecord extends CreateProduction {
+  _id: string
+  createdAt: Date
+  updatedAt: Date
+  operator?: { name: string }
+  loom?: { loomNumber: string }
+  quality?: { name: string }
+}
+
 export interface Worker {
   _id: string;
   name: string;

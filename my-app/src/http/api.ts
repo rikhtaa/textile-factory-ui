@@ -14,3 +14,4 @@ export const updateLooms = (id: string, loom: Partial<Loom>) => api.put(`/looms/
 export const getBeamsReport = () => api.get('/beams/report')
 export const createProduction = (credentials: CreateProduction) => api.post('/production', credentials)
 export const createProductionBulk = (credentials: BulkProductionImport) => api.post('/production/bulk', credentials)
+export const getListProduction = (filters?: { date: string; loomId: string; operatorId: string; }) => api.get('/production')
