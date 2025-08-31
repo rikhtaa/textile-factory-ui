@@ -11,6 +11,14 @@ export interface CreateProduction {
   notes?: string;
 }
 
+export interface BeamsReportResponse {
+  from: string;
+  to: string;
+  loomId: string | null;
+  totalMeters: number;
+  count: number;
+}
+
 export interface BulkProductionImport{
   upsert?: boolean;
   records: CreateProduction[];
