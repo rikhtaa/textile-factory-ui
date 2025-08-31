@@ -1,6 +1,16 @@
 import { create } from "zustand"
 import { devtools  } from "zustand/middleware"
 
+export interface CreateProduction {
+  operatorId: string;
+  loomId: string;
+  qualityId: string;
+  date: Date; 
+  shift?: string;
+  meterProduced: number;
+  notes?: string;
+}
+
 export interface Worker {
   _id: string;
   name: string;

@@ -1,4 +1,4 @@
-import { Loom, Quality, Worker, WorkerCredentails } from "@/store";
+import { CreateProduction, Loom, Quality, Worker, WorkerCredentails } from "@/store";
 import { api } from "./client";
 
 export const login = (credentials: WorkerCredentails) => api.post('/auth/login', credentials)
@@ -11,3 +11,5 @@ export const createLoom = (credentials: Loom) => api.post('/looms', credentials)
 export const getLooms = () => api.get('/looms')
 export const deleteLooms = (id: string) => api.delete(`/looms/${id}`)
 export const updateLooms = (id: string, loom: Partial<Loom>) => api.put(`/looms/${id}`, loom)
+export const getBeamsReport = () => api.get('/beams/report')
+export const createProduction = (credentials: CreateProduction) => api.post('/production', credentials)
