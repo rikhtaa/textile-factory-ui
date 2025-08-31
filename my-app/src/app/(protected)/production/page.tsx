@@ -1,7 +1,8 @@
 'use client'
 import { AddProduction } from '@/components/addProduction'
-import { createProduction } from '@/http/api';
-import { CreateProduction } from '@/store';
+import { AddBulkProduction } from '@/components/addProductionBulk';
+import { createProduction, createProductionBulk } from '@/http/api';
+import { BulkProductionImport, CreateProduction } from '@/store';
 import { useMutation } from '@tanstack/react-query';
 import React from 'react'
 
@@ -11,6 +12,17 @@ export default function Page() {
         mutationKey: ['produciton'],
         mutationFn: createProduction, 
     })
+   
+    const { mutate: bulkImportMutation } = useMutation({
+  mutationFn: createProductionBulk,
+  onSuccess: () => {
+    console.log("Bulk import successful")
+  }
+})
+
+const handleBulkImport = (data: BulkProductionImport) => {
+  bulkImportMutation(data)
+}
 
     const handleFormData = (formData: CreateProduction) => {
             userMutate(formData);
@@ -21,6 +33,7 @@ export default function Page() {
           <div className='flex flex-col gap-7 w-[85%] py-[1rem]'>
             <h2 className='text-black text-4xl font-bold'>Production</h2>
             <AddProduction onFormSubmit={handleFormData} />
+            <AddBulkProduction onBulkImport={handleBulkImport} />
          </div>
           </div>
   )

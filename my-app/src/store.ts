@@ -7,8 +7,13 @@ export interface CreateProduction {
   qualityId: string;
   date: Date; 
   shift?: string;
-  meterProduced: number;
+  meterProduced: number
   notes?: string;
+}
+
+export interface BulkProductionImport{
+  upsert?: boolean;
+  records: CreateProduction[];
 }
 
 export interface Worker {
