@@ -43,28 +43,28 @@ const data = {
     {
       title: "Dashboard",
       url: "/dashboard",
-      icon: IconDashboard,
     },
     {
       title: "Workers",
       url: "/workers",
-      icon: IconListDetails,
     },
     {
       title: "Qualities",
       url: "/qualities",
-      icon: IconChartBar,
     },
     {
       title: "Looms",
       url: "/looms",
-      icon: IconFolder,
     },
     {
       title: "Production",
       url: "/production",
-      icon: IconUsers,
     },
+    {
+      title: "Reports",
+      url: "/reports",
+    },
+    
   ],
   navClouds: [
     {

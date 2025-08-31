@@ -25,6 +25,16 @@ export interface ProductionRecord extends CreateProduction {
   quality?: { name: string }
 }
 
+export interface DailyLoomsResponse {
+  date: string;
+  rows: Array<{
+    loomNumber: string;
+    operatorName: string;
+    meters: number;
+  }>;
+  dayTotal: number;
+}
+
 export interface Worker {
   _id: string;
   name: string;
