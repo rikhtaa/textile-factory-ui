@@ -15,6 +15,63 @@ export interface BulkProductionImport{
   upsert?: boolean;
   records: CreateProduction[];
 }
+export interface PayrunResponse {
+results: Array<{
+    operatorId: string;
+    operatorName: string;
+    breakdown: Array<{
+      qualityId: string;
+      qualityName: string;
+      meters: number;
+      pricePerMeter: number;
+      amount: number;
+    }>;
+    gross: number;
+    adjustments: number;
+    deductions: number;
+    net: number;
+  }>;
+  runId?: string;
+}
+
+export interface OperatorPeriodResponse {
+  operatorId: string;
+  operatorName: string;
+  from: string;
+  to: string;
+  daily: Array<{
+    date: string;
+    loomNumber: string;
+    qualityName: string;
+    meters: number;
+  }>;
+  totalPayable: number;
+}
+
+export interface Operator15DayResponse {
+   operatorId: string;
+  operatorName: string;
+  from: string;
+  to: string;
+  daily: Array<{
+    date: string;
+    loomNumber: string;
+    qualityName: string;
+    meters: number;
+  }>;
+  totalPayable: number;
+}
+
+export interface DailyQualityResponse {
+  date: string;
+  rows: Array<{
+    qualityName: string;
+    totalMeters: number;
+    averagePrice: number;
+    totalValue: number;
+  }>;
+  dayTotal: number;
+}
 
 export interface ProductionRecord extends CreateProduction {
   _id: string

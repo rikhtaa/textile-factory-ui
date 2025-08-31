@@ -1,5 +1,9 @@
 'use client'
+import { Operator15DayReport } from '@/components/15dayOperatorReportTable'
+import { DailyQualityReport } from '@/components/dailyQualityReportTable'
 import { DailyLoomsReport } from '@/components/dailyReportsTable'
+import { OperatorPeriodReport } from '@/components/operatorPeriodReportTable'
+import { PayrunReport } from '@/components/payrunReport'
 import React from 'react'
 
 export default function Page() {
@@ -9,6 +13,10 @@ export default function Page() {
           <div className='flex flex-col gap-7 w-[85%] py-[1rem]'>
             <h2 className='text-black text-4xl font-bold'>Reports</h2>
             <DailyLoomsReport />
+            <DailyQualityReport/>
+            <Operator15DayReport/>
+            <OperatorPeriodReport/>
+            <PayrunReport/>
          </div>
           </div>
   )

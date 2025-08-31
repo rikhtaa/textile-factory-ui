@@ -16,3 +16,7 @@ export const createProduction = (credentials: CreateProduction) => api.post('/pr
 export const createProductionBulk = (credentials: BulkProductionImport) => api.post('/production/bulk', credentials)
 export const getListProduction = (filters?: { date: string; loomId: string; operatorId: string; }) => api.get('/production')
 export const getDailyLoomsReport = (date: string)=> api.get('/reports/daily-looms', { params: { date } })
+export const getDailyQualityReport = (date: string) => api.get('/reports/daily-quality', { params: { date } })
+export const getOperatorPeriodReport = (operatorId: string, from: string, to: string) => api.get('/reports/operator-period', { params: { operatorId, from, to } })
+export const getPayrunReport = (from: string, to: string, commit?: boolean) => api.get('/reports/payrun', { params: { from, to, commit } })
+export const get15DayOperatorReport = (operatorId: string, startDate: string) => api.get('/reports/15day-operator', { params: { operatorId, startDate } })
