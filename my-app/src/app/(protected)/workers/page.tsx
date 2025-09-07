@@ -5,8 +5,8 @@ import { AddWorker } from '@/components/addWorker'
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { creatWorker, getWorkers } from '../../../http/api'
 import { Worker } from '@/store'
-export function CreateWorker(){
-    const {data: workersData, refetch} = useQuery({
+export default function Page() {
+const {data: workersData, refetch} = useQuery({
         queryKey: ['workers'],
         queryFn: getWorkers,
     })
@@ -34,4 +34,3 @@ export function CreateWorker(){
   )
 }
 
-export default CreateWorker
