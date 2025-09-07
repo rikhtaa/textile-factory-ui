@@ -12,7 +12,7 @@ export function CreateWorker(){
     })
 
     const {mutate: userMutate} = useMutation({
-        mutationKey: ['worker'],
+        mutationKey: ['workers'],
         mutationFn: creatWorker, 
         onSuccess: ()=>{
         refetch();
