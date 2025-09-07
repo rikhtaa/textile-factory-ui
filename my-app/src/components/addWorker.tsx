@@ -39,7 +39,7 @@ export function AddWorker({
     e.preventDefault();
     if (onFormSubmit) {
       const { _id, ...workerData } = formData;
-       onFormSubmit(workerData as any);
+       onFormSubmit(workerData as Worker);
     }
     setFormData({
       _id: '',

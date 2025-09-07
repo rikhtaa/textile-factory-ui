@@ -32,8 +32,8 @@ export function AddQuality({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (onFormSubmit) {
-      const { _id, ...workerData } = formData;
-       onFormSubmit(workerData as any);
+      const { _id, ...qualityData } = formData;
+       onFormSubmit(qualityData as Quality);
     }
     setFormData({
       _id: '',

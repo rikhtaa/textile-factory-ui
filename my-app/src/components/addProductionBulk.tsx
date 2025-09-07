@@ -22,7 +22,7 @@ export function AddBulkProduction({ onBulkImport }: BulkImportProps) {
       
       const records: CreateProduction[] = lines.slice(1).map(line => {
         const values = line.split(',').map(v => v.trim())
-        const record: any = {}
+        const record: Record<string, string> = {}
         
         headers.forEach((header, index) => {
           record[header] = values[index]
@@ -32,7 +32,7 @@ export function AddBulkProduction({ onBulkImport }: BulkImportProps) {
           operatorId: record.operatorId,
           loomId: record.loomId,
           qualityId: record.qualityId,
-          date: record.date, 
+          date: new Date(record.date), 
           shift: record.shift || '',
           meterProduced: Number(record.meterProduced),
           notes: record.notes || ''
