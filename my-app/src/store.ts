@@ -101,7 +101,7 @@ export interface DailyLoomsResponse {
 }
 
 export interface Worker {
-  _id: string;
+  _id?: string;
   name: string;
   phone: number;
   role: string;
@@ -112,7 +112,7 @@ export interface Worker {
 }
 
 export interface Quality{
-  _id: string
+  _id?: string
   name: string
   pricePerMeter: number
   effectiveFrom: Date
