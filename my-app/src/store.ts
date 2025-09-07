@@ -101,7 +101,7 @@ export interface DailyLoomsResponse {
 }
 
 export interface Worker {
-  _id?: string;
+  _id: string;
   name: string;
   phone: number;
   role: string;
