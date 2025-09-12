@@ -10,9 +10,9 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useCallback, useEffect, useState } from "react"
-import { CreateProduction, Factory, Loom } from "@/store"
+import { CreateProduction, Factory, Loom, Quality } from "@/store"
 import { useQuery } from "@tanstack/react-query"
-import { getAllFactories, getLooms } from "@/http/api"
+import { getAllFactories, getAllQualities, getLooms } from "@/http/api"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 
 
@@ -26,6 +26,7 @@ export function AddProduction({
   ...props
 }: AddProductionProps){
     const [filteredLooms, setFilteredLooms] = useState<Loom[]>([])
+    const [filteredQualities, setFilteredQualities] = useState<Quality[]>([])
   const [formData, setFormData] = useState<CreateProduction>({
     operatorId: '',
     factoryId: '',
@@ -76,8 +77,15 @@ export function AddProduction({
     queryKey: ['looms'],
     queryFn: getLooms
   })
+
+  const {data: qualitiesData}= useQuery({
+      queryKey: ['quality'],
+      queryFn: getAllQualities
+  })
+
     const factories = factoriesData?.data || []
     const allLooms: Loom[] = loomsData?.data || []
+    const qualities: Quality[] = qualitiesData?.data || []
   
     useEffect(() => {
       if (formData.factoryId) {
@@ -119,20 +127,20 @@ export function AddProduction({
                 />
               </div>
 
-<div className="grid gap-3">
-  <Label htmlFor="factory">Factory</Label>
-  <select
-    id="factory"
-    value={formData.factoryId}
-    onChange={(e) => setFormData(prev => ({ ...prev, factoryId: e.target.value, loomId: '' }))}
-    className="w-full border rounded-md p-2 px-3 py-2 text-sm"
-  >
-    <option value="">Select Factory</option>
-    {factories.map((factory: any) => (
-      <option key={factory._id} value={factory._id}>
-        {factory.name}
-      </option>
-    ))}
+            <div className="grid gap-3">
+            <Label htmlFor="factory">Factory</Label>
+            <select
+            id="factory"
+            value={formData.factoryId}
+            onChange={(e) => setFormData(prev => ({ ...prev, factoryId: e.target.value, loomId: '' }))}
+            className="w-full border rounded-md p-2 px-3 py-2 text-sm"
+            >
+           <option value="">Select Factory</option>
+            {factories.map((factory: any) => (
+           <option key={factory._id} value={factory._id}>
+           {factory.name}
+            </option>
+            ))}
   </select>
 </div>
 
@@ -169,17 +177,20 @@ export function AddProduction({
               </div>
 
               <div className="grid gap-3">
-                <Label htmlFor="qualityId">Quality Id</Label>
-                <Input
-                  id="qualityId"
-                  type="string"
-                  placeholder="12122"
-                  required
-                  value={formData.qualityId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, qualityId: e.target.value })
-                  }
-                />
+                <Label htmlFor="quality">Quality</Label>
+                <select
+                id="quality"
+                value={formData.qualityId}
+                onChange={(e) => setFormData(prev => ({ ...prev, qualityId: e.target.value }))}
+                    className="w-full border rounded-md p-2 px-3 py-2 text-sm"
+                >
+                   <option value="">Select Quality</option>
+                     {qualities.map((quality: Quality) => (
+                     <option key={quality._id} value={quality._id}>
+                       {quality.name}
+                    </option>
+                     ))}
+                </select>
               </div>
 
               <div className="grid gap-3">
