@@ -12,7 +12,9 @@ import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { ChevronDownIcon } from "lucide-react"
 import { useState } from "react"
-import { Loom } from "@/store"
+import { Factory, Loom } from "@/store"
+import { useQuery } from "@tanstack/react-query"
+import { getAllFactories } from "@/http/api"
 
 
 interface AddLoomProps extends React.ComponentProps<"div"> {
@@ -26,6 +28,7 @@ export function AddLoom({
 }: AddLoomProps){
   const [formData, setFormData] = useState<Loom>({
     _id: '',
+    factoryId: '',
     loomNumber : '',
     section : '',
     status: '',
@@ -40,12 +43,20 @@ export function AddLoom({
     }
     setFormData({
        _id: '',
+      factoryId: '',
     loomNumber : '',
     section : '',
     status: '',
     beamInfo : '',
     });
   };
+
+  const {data: factoriesData}=useQuery({
+    queryKey:['factories'],
+    queryFn:getAllFactories
+  })
+    const factories: Factory[] = factoriesData?.data || []
+
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -69,11 +80,26 @@ export function AddLoom({
                   }
                 />
               </div>
+              <div className="grid gap-3">
+              <select
+  value={formData.factoryId}
+  onChange={(e) => setFormData({...formData, factoryId: e.target.value})}
+  className="w-full border rounded-md p-2"
+  required
+>
+  <option value="">Select Factory</option>
+  {factories.map(factory => (
+    <option key={factory._id} value={factory._id}>
+      {factory.name}
+    </option>
+  ))}
+</select>
+              </div>
 
               <div className="grid gap-3">
                 <Label htmlFor="section">Section</Label>
                 <Input
-                  id="section "
+                  id="section"
                   type="text"
                   placeholder="Weaving Section"
                   value={formData.section}

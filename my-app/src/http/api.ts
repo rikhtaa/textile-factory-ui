@@ -20,3 +20,4 @@ export const getOperatorPeriodReport = (operatorId: string, from: string, to: st
 export const getPayrunReport = (from: string, to: string, commit?: boolean) => api.get('/reports/payrun', { params: { from, to, commit } })
 export const get15DayOperatorReport = (operatorId: string, startDate: string) => api.get('/reports/15day-operator', { params: { operatorId, startDate } })
 export const getBeamsReport = (dateFrom: string, dateTo: string, loomId?: string) => api.get('/beams/report', { params: { dateFrom, dateTo, ...(loomId && { loomId })  } })
+export const getAllFactories = () => api.get('/factories')

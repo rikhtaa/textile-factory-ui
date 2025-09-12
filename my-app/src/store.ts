@@ -4,12 +4,14 @@ import { devtools  } from "zustand/middleware"
 export interface CreateProduction {
   operatorId: string;
   loomId: string;
+  factoryId: string
   qualityId: string;
   date: Date; 
   shift?: string;
   meterProduced: number
   notes?: string;
 }
+
 
 export interface BeamsReportResponse {
   from: string;
@@ -120,10 +122,16 @@ export interface Quality{
 
 export interface Loom {
   _id: string;
+  factoryId: string
   loomNumber: string;
   section?: string;
   status: string;
   beamInfo?: string;
+}
+
+export interface Factory{
+ _id: string
+ name: string
 }
 
 export interface LoginFormValues {
