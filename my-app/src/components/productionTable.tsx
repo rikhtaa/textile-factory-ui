@@ -4,8 +4,8 @@ import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { useQuery } from "@tanstack/react-query"
-import { getAllFactories, getListProduction, getLooms } from "@/http/api"
-import { Factory, Loom, ProductionRecord } from "@/store"
+import { getAllFactories, getAllQualities, getListProduction, getLooms, getWorkers } from "@/http/api"
+import { Factory, Loom, ProductionRecord, Quality, Worker } from "@/store"
 
 
 export function ProductionTable() {
@@ -28,10 +28,15 @@ const { data: loomsData } = useQuery({
     queryKey: ['looms'],
     queryFn: getLooms
   })
-  const {data: qualitiesData}= useQuery({
-    queryKey: [''],
-    queryFn: getQual
+const { data: qualitiesData } = useQuery({
+      queryKey: ['quality'],
+      queryFn: getAllQualities
   })
+const { data: operatorsData } = useQuery({
+      queryKey: ['workers'],
+      queryFn: getWorkers
+  })
+
   
   
   
@@ -50,6 +55,8 @@ const { data: loomsData } = useQuery({
   const records: ProductionRecord[] = productionData?.data || []
   const factories: Factory[] = factoriesData?.data || []
   const allLooms: Loom[] = loomsData?.data || []
+  const qualities: Quality[] = qualitiesData?.data || []
+  const operators: Worker[] = operatorsData?.data || []
 
     const factoryMap = new Map()
     factories.forEach(factory => {
@@ -59,6 +66,15 @@ const { data: loomsData } = useQuery({
   allLooms.forEach(loom=>{
     LoomsMap.set(loom._id,loom.loomNumber)
   })
+  const qualitiesMap = new Map()
+  qualities.forEach(quality => {
+    qualitiesMap.set(quality._id, quality.name)
+  })
+  const operatorsMap = new Map()
+  operators.forEach(operator => {
+    operatorsMap.set(operator._id, operator.name)
+  })
+  
 
 
 
@@ -131,7 +147,7 @@ const { data: loomsData } = useQuery({
                   {new Date(record.date).toLocaleDateString()}
                 </td>
                 <td className="border p-2">
-                  {record.operator?.name || record.operatorId}
+                  {operatorsMap.get(record.operatorId) || record.operatorId}
                 </td>
                 <td className="border p-2">
                   {LoomsMap.get(record.loomId) || record.loomId}
@@ -140,7 +156,7 @@ const { data: loomsData } = useQuery({
                   {factoryMap.get(record.factoryId) || record.factoryId}
                 </td>
                 <td className="border p-2">
-                  {record.quality?.name || record.qualityId}
+                  {qualitiesMap.get(record.qualityId) || record.qualityId}
                 </td>
                 <td className="border p-2">{record.shift}</td>
                 <td className="border p-2">{record.meterProduced}</td>
