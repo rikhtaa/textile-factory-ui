@@ -9,8 +9,11 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from "react"
-import { CreateProduction, Loom } from "@/store"
+import { useCallback, useEffect, useState } from "react"
+import { CreateProduction, Factory, Loom } from "@/store"
+import { useQuery } from "@tanstack/react-query"
+import { getAllFactories, getLooms } from "@/http/api"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 
 
 interface AddProductionProps extends React.ComponentProps<"div"> {
@@ -22,8 +25,10 @@ export function AddProduction({
   onFormSubmit,
   ...props
 }: AddProductionProps){
+    const [filteredLooms, setFilteredLooms] = useState<Loom[]>([])
   const [formData, setFormData] = useState<CreateProduction>({
     operatorId: '',
+    factoryId: '',
     loomId : '',
     qualityId : '',
     date: new Date(),
@@ -39,6 +44,7 @@ export function AddProduction({
   const productionData = {
     operatorId: formData.operatorId,
     loomId: formData.loomId,
+    factoryId: formData.factoryId,
     qualityId: formData.qualityId,
     date: formData.date, 
     shift: formData.shift,
@@ -53,6 +59,7 @@ export function AddProduction({
   setFormData({
     operatorId: '',
     loomId: '',
+    factoryId: '',
     qualityId: '',
     date: new Date(),
     shift: '',
@@ -60,7 +67,35 @@ export function AddProduction({
     notes: ''
   });
 };
+  const { data: factoriesData } = useQuery({
+    queryKey: ['factories'],
+    queryFn: getAllFactories
+  })
 
+  const { data: loomsData } = useQuery({
+    queryKey: ['looms'],
+    queryFn: getLooms
+  })
+    const factories = factoriesData?.data || []
+    const allLooms: Loom[] = loomsData?.data || []
+  
+    useEffect(() => {
+      if (formData.factoryId) {
+        setFilteredLooms(allLooms.filter(loom => loom.factoryId === formData.factoryId))
+      } else {
+        setFilteredLooms([])
+      }
+    }, [formData.factoryId, allLooms])
+   const handleFactoryChange = useCallback((value: string) => {
+    setFormData(prev => ({ ...prev, factoryId: value, loomId: '' }));
+  }, []);
+
+  const handleLoomChange = useCallback((value: string) => {
+    setFormData(prev => ({ ...prev, loomId: value }));
+  }, []);
+
+
+  
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="w-full">
@@ -84,18 +119,41 @@ export function AddProduction({
                 />
               </div>
 
-              <div className="grid gap-3">
-                <Label htmlFor="loomId">Loom Id</Label>
-                <Input
-                  id="loomId "
-                  type="text"
-                  placeholder="1113"
-                  value={formData.loomId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, loomId: e.target.value })
-                  }
-                />
-              </div>
+<div className="grid gap-3">
+  <Label htmlFor="factory">Factory</Label>
+  <select
+    id="factory"
+    value={formData.factoryId}
+    onChange={(e) => setFormData(prev => ({ ...prev, factoryId: e.target.value, loomId: '' }))}
+    className="w-full border rounded-md p-2 px-3 py-2 text-sm"
+  >
+    <option value="">Select Factory</option>
+    {factories.map((factory: any) => (
+      <option key={factory._id} value={factory._id}>
+        {factory.name}
+      </option>
+    ))}
+  </select>
+</div>
+
+{formData.factoryId && (
+  <div className="grid gap-3">
+    <Label htmlFor="loom">Loom</Label>
+    <select
+      id="loom"
+      value={formData.loomId}
+      onChange={(e) => setFormData(prev => ({ ...prev, loomId: e.target.value }))}
+      className="w-full border rounded-md p-2 px-3 py-2 text-sm"
+    >
+      <option value="">Select Loom</option>
+      {filteredLooms.map((loom: Loom) => (
+        <option key={loom._id} value={loom._id}>
+          {loom.loomNumber} {loom.section && `- ${loom.section}`}
+        </option>
+      ))}
+    </select>
+  </div>
+)}
 
               <div className="grid gap-3">
                 <Label htmlFor="date">Date</Label>

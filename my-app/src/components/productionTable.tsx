@@ -4,14 +4,15 @@ import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { useQuery } from "@tanstack/react-query"
-import { getListProduction } from "@/http/api"
-import { ProductionRecord } from "@/store"
+import { getAllFactories, getListProduction, getLooms } from "@/http/api"
+import { Factory, Loom, ProductionRecord } from "@/store"
 
 
 export function ProductionTable() {
   const [filters, setFilters] = useState({
     date: "",
     loomId: "",
+    factoryId: "",
     operatorId: ""
   })
 
@@ -19,19 +20,47 @@ export function ProductionTable() {
     queryKey: ['production', filters],
     queryFn: () => getListProduction(filters)
   })
-
+    const { data: factoriesData } = useQuery({
+    queryKey: ['factories'],
+    queryFn: getAllFactories 
+  })
+const { data: loomsData } = useQuery({
+    queryKey: ['looms'],
+    queryFn: getLooms
+  })
+  const {data: qualitiesData}= useQuery({
+    queryKey: [''],
+    queryFn: getQual
+  })
+  
+  
+  
   const handleFilterChange = (key: keyof typeof filters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }))
   }
 
   const clearFilters = () => {
-    setFilters({ date: "", loomId: "", operatorId: "" })
+    setFilters({ date: "", loomId: "", factoryId: "", operatorId: "",
+ })
   }
 
   if (isLoading) return <div>Loading production records...</div>
   if (error) return <div>Error loading records</div>
 
   const records: ProductionRecord[] = productionData?.data || []
+  const factories: Factory[] = factoriesData?.data || []
+  const allLooms: Loom[] = loomsData?.data || []
+
+    const factoryMap = new Map()
+    factories.forEach(factory => {
+    factoryMap.set(factory._id, factory.name)
+  })
+  const LoomsMap = new Map()
+  allLooms.forEach(loom=>{
+    LoomsMap.set(loom._id,loom.loomNumber)
+  })
+
+
 
   return (
     <div className="space-y-4">
@@ -57,6 +86,16 @@ export function ProductionTable() {
         </div>
 
         <div>
+          <Label htmlFor="factoryId">Factory ID</Label>
+          <Input
+            id="factoryId"
+            value={filters.factoryId}
+            onChange={(e) => handleFilterChange('factoryId', e.target.value)}
+            placeholder="Filter by factory"
+          />
+        </div>
+
+        <div>
           <Label htmlFor="operatorId">Operator ID</Label>
           <Input
             id="operatorId"
@@ -78,6 +117,7 @@ export function ProductionTable() {
               <th className="border p-2">Date</th>
               <th className="border p-2">Operator</th>
               <th className="border p-2">Loom</th>
+              <th className="border p-2">Factory</th>
               <th className="border p-2">Quality</th>
               <th className="border p-2">Shift</th>
               <th className="border p-2">Meters Produced</th>
@@ -94,7 +134,10 @@ export function ProductionTable() {
                   {record.operator?.name || record.operatorId}
                 </td>
                 <td className="border p-2">
-                  {record.loom?.loomNumber || record.loomId}
+                  {LoomsMap.get(record.loomId) || record.loomId}
+                </td>
+                <td className="border p-2">
+                  {factoryMap.get(record.factoryId) || record.factoryId}
                 </td>
                 <td className="border p-2">
                   {record.quality?.name || record.qualityId}
