@@ -5,7 +5,8 @@ import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { useQuery } from "@tanstack/react-query"
 import { getAllFactories, getAllQualities, getListProduction, getLooms, getWorkers } from "@/http/api"
-import { Factory, Loom, ProductionRecord, Quality, Worker } from "@/store"
+import { CreateProduction, Factory, Loom, ProductionRecord, Quality, Worker } from "@/store"
+import { CustomCombobox } from "./addProduction"
 
 
 export function ProductionTable() {
@@ -15,6 +16,21 @@ export function ProductionTable() {
     factoryId: "",
     operatorId: ""
   })
+  const [formData, setFormData] = useState({
+    date: "",
+    loomId: "",
+    factoryId: "",
+    operatorId: ""
+    });
+    const [openDropdowns, setOpenDropdowns] = useState({
+      operator: false,
+      factory: false,
+      loom: false,
+      quality: false,
+      shift: false
+    });
+  
+  
 
   const { data: productionData, isLoading, error } = useQuery({
     queryKey: ['production', filters],
@@ -82,7 +98,7 @@ const { data: operatorsData } = useQuery({
     <div className="space-y-4">
       <div className="flex gap-4 items-end p-4 bg-gray-50 rounded-lg">
         <div>
-          <Label htmlFor="date">Date</Label>
+          <Label htmlFor="date" className="pb-1">Date</Label>
           <Input
             id="date"
             type="date"
@@ -92,33 +108,43 @@ const { data: operatorsData } = useQuery({
         </div>
         
         <div>
-          <Label htmlFor="loomId">Loom ID</Label>
-          <Input
-            id="loomId"
-            value={filters.loomId}
-            onChange={(e) => handleFilterChange('loomId', e.target.value)}
-            placeholder="Filter by loom"
+          <Label htmlFor="loomId" className="pb-1">Loom</Label>
+           <CustomCombobox
+             value={formData.loomId}
+             onValueChange={(value) => setFormData(prev => ({ ...prev, loomId: value }))}
+              items={allLooms.map(loom => ({ 
+                value: loom._id || 'unknown', 
+                label: `${loom.loomNumber}${loom.section ? ` - ${loom.section}` : ''}`
+              }))}
+              placeholder="Select loom"
+              open={openDropdowns.loom}
+              onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, loom: open }))}
+            />
+          
+        </div>
+
+        <div>
+          <Label htmlFor="factoryId" className="pb-1">Factory</Label>
+          <CustomCombobox
+          value={formData.factoryId}
+          onValueChange={(value) => setFormData(prev => ({ ...prev, factoryId: value, loomId: '' }))}
+          items={factories.map(factory => ({ value: factory._id || 'unknown', label: factory.name }))}
+          placeholder="Select factory"
+          open={openDropdowns.factory}
+          onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, factory: open }))}
           />
         </div>
 
         <div>
-          <Label htmlFor="factoryId">Factory ID</Label>
-          <Input
-            id="factoryId"
-            value={filters.factoryId}
-            onChange={(e) => handleFilterChange('factoryId', e.target.value)}
-            placeholder="Filter by factory"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="operatorId">Operator ID</Label>
-          <Input
-            id="operatorId"
-            value={filters.operatorId}
-            onChange={(e) => handleFilterChange('operatorId', e.target.value)}
-            placeholder="Filter by operator"
-          />
+          <Label htmlFor="operatorId" className="pb-1">Operator</Label>
+           <CustomCombobox
+                  value={formData.operatorId}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, operatorId: value }))}
+                  items={operators.map(op => ({ value: op._id || 'unknown', label: op.name }))}
+                  placeholder="Select operator"
+                  open={openDropdowns.operator}
+                  onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, operator: open }))}
+                />
         </div>
 
         <Button onClick={clearFilters} variant="outline">

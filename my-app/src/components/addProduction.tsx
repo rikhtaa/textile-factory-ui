@@ -32,7 +32,7 @@ interface AddProductionProps extends React.ComponentProps<"div"> {
   onFormSubmit?: (formData: CreateProduction) => void;
 }
 
-const CustomCombobox = ({ 
+export const CustomCombobox = ({ 
   value, 
   onValueChange, 
   items, 
