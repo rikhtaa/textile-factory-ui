@@ -2,7 +2,7 @@
 import { Factory, Loom } from "@/store"
 import { Button } from "./ui/button"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { deleteLooms, getAllFactories, getFactoryById, updateLooms } from "@/http/api"
+import { deleteLooms, getAllFactories, updateLooms } from "@/http/api"
 import { useEffect, useState } from "react"
 
 export function LoomTable({ looms }: { looms: Loom[] }) {
