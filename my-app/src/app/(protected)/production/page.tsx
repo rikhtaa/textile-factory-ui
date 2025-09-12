@@ -34,7 +34,6 @@ const handleBulkImport = (data: BulkProductionImport) => {
           <div className='flex flex-col gap-7 w-[85%] py-[1rem]'>
             <h2 className='text-black text-4xl font-bold'>Production</h2>
             <AddProduction onFormSubmit={handleFormData} />
-            <AddBulkProduction onBulkImport={handleBulkImport} />
             <ProductionTable/>
          </div>
           </div>
