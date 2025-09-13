@@ -2,10 +2,11 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useQuery } from "@tanstack/react-query"
-import { getOperatorPeriodReport } from "@/http/api"
+import { getOperatorPeriodReport, getWorkers } from "@/http/api"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
-import { OperatorPeriodResponse } from "@/store"
+import { OperatorPeriodResponse, Worker } from "@/store"
+import { CustomCombobox } from "./addProduction"
 
 export function OperatorPeriodReport() {
   const [operatorId, setOperatorId] = useState("")
@@ -17,6 +18,18 @@ export function OperatorPeriodReport() {
     queryFn: () => getOperatorPeriodReport(operatorId, fromDate, toDate),
     enabled: !!operatorId && !!fromDate && !!toDate
   })
+  const { data: operatorsData } = useQuery({
+        queryKey: ['workers'],
+        queryFn: getWorkers
+    })
+  const operators: Worker[] = operatorsData?.data || []
+  const operatorsMap = new Map()
+  operators.forEach(operator => {
+    operatorsMap.set(operator._id, operator.name)
+  })
+    const [openDropdowns, setOpenDropdowns] = useState({
+      operator: false,
+    });
 
   const periodData: OperatorPeriodResponse = report?.data
 
@@ -25,7 +38,16 @@ export function OperatorPeriodReport() {
       <CardHeader><CardTitle>Operator Period Report</CardTitle></CardHeader>
       <CardContent>
         <div className="grid grid-cols-3 gap-4 mb-4">
-          <div><Label>Operator ID</Label><Input value={operatorId} onChange={(e) => setOperatorId(e.target.value)} /></div>
+          <div><Label>Operator</Label>
+          <CustomCombobox
+          value={operatorId}
+          onValueChange={(value) => setOperatorId(value)}
+          items={operators.map(op => ({ value: op._id || 'unknown', label: op.name }))}
+          placeholder="Select operator"
+          open={openDropdowns.operator}
+          onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, operator: open }))}
+          />
+          </div>
           <div><Label>From Date</Label><Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} /></div>
           <div><Label>To Date</Label><Input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} /></div>
         </div>

@@ -2,20 +2,33 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useQuery } from "@tanstack/react-query"
-import { get15DayOperatorReport } from "@/http/api"
+import { get15DayOperatorReport, getWorkers } from "@/http/api"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
-import { Operator15DayResponse } from "@/store"
+import { Operator15DayResponse, Worker } from "@/store"
+import { CustomCombobox } from "./addProduction"
 
 export function Operator15DayReport() {
   const [operatorId, setOperatorId] = useState("")
   const [startDate, setStartDate] = useState("")
+  const [openDropdowns, setOpenDropdowns] = useState({
+    operator: false,
+  });
 
   const { data: report, isLoading, error } = useQuery({
     queryKey: ['15day-operator', operatorId, startDate],
     queryFn: () => get15DayOperatorReport(operatorId, startDate),
     enabled: !!operatorId && !!startDate
   })
+    const { data: operatorsData } = useQuery({
+          queryKey: ['workers'],
+          queryFn: getWorkers
+      })
+    const operators: Worker[] = operatorsData?.data || []
+    const operatorsMap = new Map()
+    operators.forEach(operator => {
+      operatorsMap.set(operator._id, operator.name)
+    })
 
   const operatorData: Operator15DayResponse = report?.data
 
@@ -26,7 +39,16 @@ export function Operator15DayReport() {
       <CardHeader><CardTitle>15-Day Operator Report</CardTitle></CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 gap-4 mb-4">
-          <div><Label>Operator ID</Label><Input value={operatorId} onChange={(e) => setOperatorId(e.target.value)} /></div>
+          <div><Label>Operator</Label>
+           <CustomCombobox
+            value={operatorId}
+            onValueChange={(value) => setOperatorId(value)}
+            items={operators.map(op => ({ value: op._id || 'unknown', label: op.name }))}
+            placeholder="Select operator"
+            open={openDropdowns.operator}
+            onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, operator: open }))}
+            />
+          </div>
           <div><Label>Start Date</Label><Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} /></div>
         </div>
 
