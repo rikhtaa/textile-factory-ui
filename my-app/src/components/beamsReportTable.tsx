@@ -2,21 +2,32 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useQuery } from "@tanstack/react-query"
-import { getBeamsReport } from "@/http/api"
+import { getBeamsReport, getLooms } from "@/http/api"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
-import { BeamsReportResponse } from "@/store"
+import { BeamsReportResponse, Loom } from "@/store"
+import { CustomCombobox } from "./addProduction"
 
 export function BeamsReport() {
   const [dateFrom, setDateFrom] = useState("")
   const [dateTo, setDateTo] = useState("")
   const [loomId, setLoomId] = useState("")
+    const [openDropdowns, setOpenDropdowns] = useState({
+      loom: false,
+    });
 
   const { data: report, isLoading, error } = useQuery({
     queryKey: ['beams-report', dateFrom, dateTo, loomId],
-    queryFn: () => getBeamsReport(dateFrom, dateTo, loomId),
+    queryFn: () => getBeamsReport(dateFrom, dateTo, String(loomId)),
     enabled: !!dateFrom && !!dateTo
   })
+  const { data: loomsData } = useQuery({
+      queryKey: ['looms'],
+      queryFn: getLooms
+    })
+  
+    const allLooms: Loom[] = loomsData?.data || []
+
 
   const beamsData: BeamsReportResponse = report?.data
 
@@ -42,12 +53,15 @@ export function BeamsReport() {
             />
           </div>
           <div>
-            <Label>Loom ID (Optional)</Label>
-            <Input 
-              value={loomId} 
-              onChange={(e) => setLoomId(e.target.value)} 
-              placeholder="Filter by loom ID"
-            />
+            <Label>Loom</Label>
+             <CustomCombobox
+                value={loomId}
+                onValueChange={(value) => setLoomId(value)}
+                items={allLooms.map(loom => ({ value: loom._id || 'unknown', label: loom.loomNumber}))}
+                placeholder="Filter by loom"
+                open={openDropdowns.loom}
+                onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, loom: open }))}
+              />
           </div>
         </div>
 
