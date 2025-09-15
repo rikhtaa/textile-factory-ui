@@ -1,4 +1,4 @@
-import { BulkProductionImport, CreateProduction, Loom, Quality, Worker, WorkerCredentails } from "@/store";
+import { BulkProductionImport, CreateProduction, Loom, ProductionFilters, ProductionRecord, Quality, Worker, WorkerCredentails } from "@/store";
 import { api } from "./client";
 
 export const login = (credentials: WorkerCredentails) => api.post('/auth/login', credentials)
@@ -14,7 +14,29 @@ export const deleteLooms = (id: string) => api.delete(`/looms/${id}`)
 export const updateLooms = (id: string, loom: Partial<Loom>) => api.put(`/looms/${id}`, loom)
 export const createProduction = (credentials: CreateProduction) => api.post('/production', credentials)
 export const createProductionBulk = (credentials: BulkProductionImport) => api.post('/production/bulk', credentials)
-export const getListProduction = (filters?: { date: string; loomId: string; operatorId: string; }) => api.get('/production')
+export const getListProduction = async (
+  filters: ProductionFilters = {}
+): Promise<{ data: ProductionRecord[] }> => {
+  try {
+    const params = new URLSearchParams();
+    
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) params.append(key, value);
+    });
+
+    const response = await api.get<ProductionRecord[]>(
+      `/production?${params.toString()}`
+    );
+    
+    return { data: response.data };
+  } catch (error) {
+    const errorMessage = error instanceof Error 
+      ? error.message 
+      : 'Unknown error occurred';
+    
+    throw new Error(`Failed to fetch production records: ${errorMessage}`);
+  }
+};
 export const getDailyLoomsReport = (date: string)=> api.get('/reports/daily-looms', { params: { date } })
 export const getDailyQualityReport = (date: string) => api.get('/reports/daily-quality', { params: { date } })
 export const getOperatorPeriodReport = (operatorId: string, from: string, to: string) => api.get('/reports/operator-period', { params: { operatorId, from, to } })

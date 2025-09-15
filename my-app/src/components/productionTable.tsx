@@ -5,7 +5,7 @@ import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { useQuery } from "@tanstack/react-query"
 import { getAllFactories, getAllQualities, getListProduction, getLooms, getWorkers } from "@/http/api"
-import { CreateProduction, Factory, Loom, ProductionRecord, Quality, Worker } from "@/store"
+import { Factory, Loom, ProductionRecord, Quality, Worker } from "@/store"
 import { CustomCombobox } from "./addProduction"
 
 
@@ -16,12 +16,7 @@ export function ProductionTable() {
     factoryId: "",
     operatorId: ""
   })
-  const [formData, setFormData] = useState({
-    date: "",
-    loomId: "",
-    factoryId: "",
-    operatorId: ""
-    });
+
     const [openDropdowns, setOpenDropdowns] = useState({
       operator: false,
       factory: false,
@@ -54,10 +49,10 @@ const { data: operatorsData } = useQuery({
   })
 
   
-  
-  
   const handleFilterChange = (key: keyof typeof filters, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value }))
+    setFilters(prev => ({ ...prev, [key]: value,
+      ...(key === 'factoryId' && { loomId: '' }) 
+     }))
   }
 
   const clearFilters = () => {
@@ -92,8 +87,6 @@ const { data: operatorsData } = useQuery({
   })
   
 
-
-
   return (
     <div className="space-y-4">
       <div className="flex gap-4 items-end p-4 bg-gray-50 rounded-lg">
@@ -110,8 +103,8 @@ const { data: operatorsData } = useQuery({
         <div>
           <Label htmlFor="loomId" className="pb-1">Loom</Label>
            <CustomCombobox
-             value={formData.loomId}
-             onValueChange={(value) => setFormData(prev => ({ ...prev, loomId: value }))}
+             value={filters.loomId}
+             onValueChange={(value) => handleFilterChange('loomId', value)}
               items={allLooms.map(loom => ({ 
                 value: loom._id || 'unknown', 
                 label: `${loom.loomNumber}${loom.section ? ` - ${loom.section}` : ''}`
@@ -126,8 +119,8 @@ const { data: operatorsData } = useQuery({
         <div>
           <Label htmlFor="factoryId" className="pb-1">Factory</Label>
           <CustomCombobox
-          value={formData.factoryId}
-          onValueChange={(value) => setFormData(prev => ({ ...prev, factoryId: value, loomId: '' }))}
+          value={filters.factoryId}
+          onValueChange={(value) => handleFilterChange('factoryId', value)}
           items={factories.map(factory => ({ value: factory._id || 'unknown', label: factory.name }))}
           placeholder="Select factory"
           open={openDropdowns.factory}
@@ -138,8 +131,8 @@ const { data: operatorsData } = useQuery({
         <div>
           <Label htmlFor="operatorId" className="pb-1">Operator</Label>
            <CustomCombobox
-                  value={formData.operatorId}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, operatorId: value }))}
+                  value={filters.operatorId}
+                  onValueChange={(value) => handleFilterChange('operatorId', value)}
                   items={operators.map(op => ({ value: op._id || 'unknown', label: op.name }))}
                   placeholder="Select operator"
                   open={openDropdowns.operator}

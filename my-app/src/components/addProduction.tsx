@@ -27,9 +27,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Toaster } from "./ui/sonner"
+import { toast } from "sonner"
 
 interface AddProductionProps extends React.ComponentProps<"div"> {
   onFormSubmit?: (formData: CreateProduction) => void;
+  onSucess: boolean | undefined
+  isPending: boolean | undefined
 }
 
 export const CustomCombobox = ({ 
@@ -95,6 +99,8 @@ export const CustomCombobox = ({
 export function AddProduction({
   className,
   onFormSubmit,
+  isPending, 
+  onSucess, 
   ...props
 }: AddProductionProps) {
   const [filteredLooms, setFilteredLooms] = useState<Loom[]>([])
@@ -105,7 +111,7 @@ export function AddProduction({
     qualityId: '',
     date: new Date(),
     shift: '',
-    meterProduced: 0.1,
+    meterProduced: Number(0),
     notes: ''
   });
 
@@ -119,6 +125,16 @@ export function AddProduction({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+     if (
+    !formData.operatorId ||
+    !formData.factoryId ||
+    !formData.loomId ||
+    !formData.qualityId ||
+    !formData.shift
+  ) {
+    toast.error("Please fill in all required fields.");
+    return;
+  }
     
     const productionData = {
       operatorId: formData.operatorId,
@@ -142,7 +158,7 @@ export function AddProduction({
       qualityId: '',
       date: new Date(),
       shift: '',
-      meterProduced: 0.1,
+      meterProduced: Number(0),
       notes: ''
     });
   };
@@ -188,8 +204,9 @@ export function AddProduction({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="w-full">
-        <CardHeader>
+        <CardHeader className="flex justify-between">
           <CardTitle>Add Production</CardTitle>
+          <Toaster />
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
@@ -241,9 +258,11 @@ export function AddProduction({
                   id="date"
                   type="date"
                   value={formData.date.toISOString().split('T')[0]}
+                  required
                   onChange={(e) =>
                     setFormData({ ...formData, date: new Date(e.target.value) })
                   }
+          
                 />
               </div>
 
@@ -305,8 +324,8 @@ export function AddProduction({
               </div>
 
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                  Create
+                <Button type="submit" className="w-full" disabled={isPending}>
+                  {isPending ? 'Creating...' : 'Create'}
                 </Button>
               </div>
             </div>

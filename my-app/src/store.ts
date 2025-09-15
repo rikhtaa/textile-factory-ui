@@ -7,11 +7,17 @@ export interface CreateProduction {
   factoryId: string
   qualityId: string;
   date: Date; 
-  shift?: string;
+  shift: string;
   meterProduced: number
   notes?: string;
 }
 
+export interface ProductionFilters {
+  date?: string;
+  loomId?: string;
+  operatorId?: string;
+  factoryId?: string;
+}
 
 export interface BeamsReportResponse {
   from: string;
