@@ -15,15 +15,19 @@ import { useState } from "react"
 import { Factory, Loom } from "@/store"
 import { useQuery } from "@tanstack/react-query"
 import { getAllFactories } from "@/http/api"
+import { Toaster } from "./ui/sonner"
+import { toast } from "sonner"
 
 
 interface AddLoomProps extends React.ComponentProps<"div"> {
   onFormSubmit?: (formData: Loom) => void;
+  isPending: boolean | undefined
 }
 
 export function AddLoom({
   className,
   onFormSubmit,
+  isPending, 
   ...props
 }: AddLoomProps){
   const [formData, setFormData] = useState<Loom>({
@@ -37,6 +41,17 @@ export function AddLoom({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+     if (
+    !formData.beamInfo ||
+    !formData.factoryId ||
+    !formData.loomNumber ||
+    !formData.section ||
+    !formData.status
+  ) {
+    toast.error("Please fill in all required fields.");
+    return;
+  }
+      
     if (onFormSubmit) {
       const { _id, ...loomData } = formData;
        onFormSubmit(loomData as Loom);
@@ -61,8 +76,9 @@ export function AddLoom({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="w-full">
-        <CardHeader>
+        <CardHeader className="flex justify-between">
           <CardTitle>Add new Loom</CardTitle>
+          <Toaster />
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
@@ -147,8 +163,8 @@ export function AddLoom({
               </div>
              
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                  Create
+                <Button type="submit" className="w-full" disabled={isPending}>
+                  {isPending ? 'Creating...' : 'Create'}
                 </Button>
               </div>
             </div>

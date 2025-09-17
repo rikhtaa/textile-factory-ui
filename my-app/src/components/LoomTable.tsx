@@ -4,6 +4,7 @@ import { Button } from "./ui/button"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { deleteLooms, getAllFactories, updateLooms } from "@/http/api"
 import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 export function LoomTable({ looms }: { looms: Loom[] }) {
    const queryClient = useQueryClient()
@@ -13,6 +14,17 @@ export function LoomTable({ looms }: { looms: Loom[] }) {
     mutationFn: deleteLooms,
     onSuccess: ()=>{
       queryClient.invalidateQueries({queryKey: ['loom']})
+      toast.success("Loom removed successfully");
+    },
+    onError: (error: any) => {
+      if (error.response?.status === 404) {
+       toast.error("Loom have been already deleted");
+      }else if(error.response?.status >= 500){
+       toast.error("Internet issue please try again later");
+      }
+      else{
+       toast.error(error.response?.data?.message || error.message);
+      }
     }
   })
 
@@ -22,8 +34,18 @@ const updateMutation = useMutation({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['loom'] })
       setEditingLoom(null)
+        toast.success("User has been updated");
+    },
+    onError: (error: any) => {
+      if(error.response?.status === 500 ||error.response?.data?.message.includes('ENOTFOUND') || error.message?.includes('ENOTFOUND')){
+        toast.error("No internet connection.")
+      }else{
+        toast.error(error.response?.data?.message || error.message );
+      }
     }
   })
+
+  
 
   const handleDelete = (loomId: string)=>{
     console.log('Deleting loom with ID:', loomId) 
