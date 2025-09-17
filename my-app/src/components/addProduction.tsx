@@ -308,6 +308,7 @@ export function AddProduction({
                   onChange={(e) =>
                     setFormData({ ...formData, meterProduced: Number(e.target.value) })
                   }
+                  onWheel={(e) => e.currentTarget.blur()}
                 />
               </div>
 
