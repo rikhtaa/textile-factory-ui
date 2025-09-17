@@ -4,6 +4,7 @@ import { Button } from "./ui/button"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { deleteWorker, updateWorker } from "@/http/api"
 import { useState } from "react"
+import { toast } from "sonner"
 
 export function WorkersTable({ workers }: { workers: Worker[] }) {
    const queryClient = useQueryClient()
@@ -22,6 +23,17 @@ export function WorkersTable({ workers }: { workers: Worker[] }) {
     },
     onSuccess: ()=>{
       queryClient.invalidateQueries({queryKey: ['workers']})
+       toast.success("Worker removed successfully");
+    },
+    onError: (error: any) => {
+      if (error.response?.status === 404) {
+       toast.error("Woker have been already deleted");
+      }else if(error.response?.status >= 500){
+       toast.error("Internet issue please try again later");
+      }
+      else{
+       toast.error(error.response?.data?.message || error.message);
+      }
     }
   })
 
@@ -41,6 +53,14 @@ const updateMutation = useMutation({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workers'] })
       setEditingWorker(null)
+      toast.success("Woker has been updated");
+    },
+     onError: (error: any) => {
+      if(error.response?.status === 500 ||error.response?.data?.message.includes('ENOTFOUND') || error.message?.includes('ENOTFOUND')){
+        toast.error("No internet connection.")
+      }else{
+        toast.error(error.response?.data?.message || error.message );
+      }
     }
   })
 

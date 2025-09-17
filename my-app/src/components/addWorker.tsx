@@ -13,15 +13,19 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { ChevronDownIcon } from "lucide-react"
 import { useState } from "react"
 import { Worker } from "@/store"
+import { Toaster } from "./ui/sonner"
+import { toast } from "sonner"
 
 
 interface AddWorkerProps extends React.ComponentProps<"div"> {
   onFormSubmit?: (formData: Worker) => void;
+  isPending: boolean | undefined
 }
 
 export function AddWorker({
   className,
   onFormSubmit,
+  isPending,
   ...props
 }: AddWorkerProps){
   const [formData, setFormData] = useState<Worker>({
@@ -37,6 +41,18 @@ export function AddWorker({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+     if (
+    !formData.email ||
+    !formData.hireDate ||
+    !formData.name ||
+    !formData.password ||
+    !formData.phone ||
+    !formData.role ||
+    !formData.status 
+   ){
+    toast.error("Please fill in all required fields.");
+    return;
+  }
     if (onFormSubmit) {
       const { _id, ...workerData } = formData;
        onFormSubmit(workerData as Worker);
@@ -56,8 +72,9 @@ export function AddWorker({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="w-full">
-        <CardHeader>
+        <CardHeader className="flex justify-between">
           <CardTitle>Add new worker</CardTitle>
+          <Toaster />
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
@@ -116,13 +133,14 @@ export function AddWorker({
                 <Label htmlFor="phone">Phone</Label>
                 <Input
                   id="phone"
-                  type="number"
+                  type="tel"
                   placeholder="+921347265271"
                   required
                   value={formData.phone}
                   onChange={(e) =>
                     setFormData({ ...formData, phone: Number(e.target.value) })
                   }
+                  onWheel={(e) => e.currentTarget.blur()}
                 />
               </div>
 
@@ -198,8 +216,8 @@ export function AddWorker({
                 />
               </div>
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                  Create
+                <Button type="submit" className="w-full" disabled={isPending}>
+                  {isPending ? 'Creating...' : 'Create'}
                 </Button>
               </div>
             </div>
