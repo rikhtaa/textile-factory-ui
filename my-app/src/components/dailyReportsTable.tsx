@@ -18,13 +18,14 @@ export function DailyLoomsReport() {
     queryFn: () => getDailyLoomsReport(selectedDate),
     enabled: !!selectedDate
   })
+  
 
   const dailyData: DailyLoomsResponse = report?.data
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Daily Looms Report</CardTitle>
+        <CardTitle>Daily Looms Production and operation Report</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -68,7 +69,7 @@ export function DailyLoomsReport() {
                     <tr className="bg-gray-100">
                       <th className="border p-2">Loom Number</th>
                       <th className="border p-2">Operator</th>
-                      <th className="border p-2">Production (m)</th>
+                      <th className="border p-2">Production</th>
                     </tr>
                   </thead>
                   <tbody>

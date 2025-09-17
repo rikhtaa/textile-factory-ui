@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { get15DayOperatorReport, getWorkers } from "@/http/api"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
-import { Operator15DayResponse, Worker } from "@/store"
+import {  Operator15DayResponse, Worker } from "@/store"
 import { CustomCombobox } from "./addProduction"
 
 export function Operator15DayReport() {
@@ -32,7 +32,14 @@ export function Operator15DayReport() {
 
   const operatorData: Operator15DayResponse = report?.data
 
-  const totalMeters = operatorData?.daily?.reduce((sum, day) => sum + (day.meters || 0), 0) || 0
+
+  const totalMeters =
+  operatorData?.daily?.reduce(
+    (sum, day) =>
+      sum + day.qualities.reduce((qSum, q) => qSum + (q.meters || 0), 0),
+    0
+  ) || 0;
+
 
   return (
     <Card>
@@ -63,28 +70,30 @@ export function Operator15DayReport() {
             
             <div className="bg-purple-50 p-4 rounded-lg mb-4">
               <h4 className="font-semibold">Summary</h4>
-              <p>Total Production: {totalMeters}m</p>
-              <p>Total Days: {operatorData.daily?.length || 0}</p>
-              <p>Total Payable: ${operatorData.totalPayable || 0}</p>
+              <p>Total Production: {totalMeters}</p>
+              <p>Total Payable: {operatorData.totalPayable || 0}</p>
             </div>
 
             {operatorData.daily && operatorData.daily.length > 0 ? (
               <table className="w-full border-collapse border">
                 <thead><tr className="bg-gray-100">
-                  <th className="border p-2">Date</th>
-                  <th className="border p-2">Loom</th>
                   <th className="border p-2">Quality</th>
+                  <th className="border p-2">Price per meter</th>
                   <th className="border p-2">Meters</th>
+                  <th className="border p-2">Amount</th>
                 </tr></thead>
                 <tbody>
                   {operatorData.daily.map((day, index) => (
-                    <tr key={index}>
-                      <td className="border p-2">{day.date || 'N/A'}</td>
-                      <td className="border p-2">{day.loomNumber || 'N/A'}</td>
-                      <td className="border p-2">{day.qualityName || 'N/A'}</td>
-                      <td className="border p-2">{day.meters || 0}m</td>
-                    </tr>
-                  ))}
+                      day.qualities.map((quality)=>(
+                        <tr key={index}>
+                          <td className="border p-2" key={quality._id}>{quality.qualityName }</td>
+                          <td className="border p-2" key={quality._id}>{quality.pricePerMeter}</td>
+                          <td className="border p-2" key={quality._id}>{quality.meters}</td>
+                          <td className="border p-2" key={quality._id}>{quality.amount}</td>
+                        </tr>
+                      )))
+                    )
+                  }
                 </tbody>
               </table>
             ) : (

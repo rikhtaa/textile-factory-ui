@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { getOperatorPeriodReport, getWorkers } from "@/http/api"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
-import { OperatorPeriodResponse, Worker } from "@/store"
+import { Operator15DayResponse, OperatorPeriodResponse, Worker } from "@/store"
 import { CustomCombobox } from "./addProduction"
 
 export function OperatorPeriodReport() {
@@ -31,7 +31,15 @@ export function OperatorPeriodReport() {
       operator: false,
     });
 
-  const periodData: OperatorPeriodResponse = report?.data
+  const operatorData: Operator15DayResponse = report?.data
+    const totalMeters =
+  operatorData?.daily?.reduce(
+    (sum, day) =>
+      sum + day.qualities.reduce((qSum, q) => qSum + (q.meters || 0), 0),
+    0
+  ) || 0;
+
+
 
   return (
     <Card>
@@ -55,38 +63,40 @@ export function OperatorPeriodReport() {
         {isLoading && <div>Loading...</div>}
         {error && <div className="text-red-500">Error loading report</div>}
         
-        {periodData && (
+        {operatorData && (
           <div>
-            <h3 className="font-semibold mb-4">{periodData.operatorName} - {periodData.from} to {periodData.to}</h3>
+            <h3 className="font-semibold mb-4">{operatorData.operatorName} - {operatorData.from} to {operatorData.to}</h3>
             
             <div className="bg-green-50 p-4 rounded-lg mb-4">
               <h4 className="font-semibold">Summary</h4>
-              <p>Total Production: {periodData.daily.reduce((sum, day) => sum + day.meters, 0)}m</p>
-              <p>Total Days: {periodData.daily.length}</p>
-              <p>Total Payable: ${periodData.totalPayable}</p>
+              <p>Total Production: {totalMeters}</p>
+              <p>Total Payable: {operatorData.totalPayable}</p>
             </div>
 
-            {periodData.daily.length > 0 ? (
+             {operatorData.daily && operatorData.daily.length > 0 ? (
               <table className="w-full border-collapse border">
                 <thead><tr className="bg-gray-100">
-                  <th className="border p-2">Date</th>
-                  <th className="border p-2">Loom</th>
                   <th className="border p-2">Quality</th>
+                  <th className="border p-2">Price per meter</th>
                   <th className="border p-2">Meters</th>
+                  <th className="border p-2">Amount</th>
                 </tr></thead>
                 <tbody>
-                  {periodData.daily.map((day, index) => (
-                    <tr key={index}>
-                      <td className="border p-2">{day.date}</td>
-                      <td className="border p-2">{day.loomNumber}</td>
-                      <td className="border p-2">{day.qualityName}</td>
-                      <td className="border p-2">{day.meters}m</td>
-                    </tr>
-                  ))}
+                  {operatorData.daily.map((day, index) => (
+                      day.qualities.map((quality)=>(
+                        <tr key={index}>
+                          <td className="border p-2" key={quality._id}>{quality.qualityName }</td>
+                          <td className="border p-2" key={quality._id}>{quality.pricePerMeter}</td>
+                          <td className="border p-2" key={quality._id}>{quality.meters}</td>
+                          <td className="border p-2" key={quality._id}>{quality.amount}</td>
+                        </tr>
+                      )))
+                    )
+                  }
                 </tbody>
               </table>
             ) : (
-              <div className="text-gray-500">No production data found for this period</div>
+              <div className="text-gray-500">No production data available for this period</div>
             )}
           </div>
         )}
