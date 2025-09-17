@@ -48,6 +48,7 @@ results: Array<{
     net: number;
   }>;
   runId?: string;
+  name: string
 }
 
 export interface OperatorPeriodResponse {
@@ -71,9 +72,13 @@ export interface Operator15DayResponse {
   to: string;
   daily: Array<{
     date: string;
-    loomNumber: string;
-    qualityName: string;
-    meters: number;
+    qualities: Array<{
+      _id: string
+     qualityName: string
+      pricePerMeter: number
+      meters: number
+      amount: number
+    }>
   }>;
   totalPayable: number;
 }
@@ -82,9 +87,8 @@ export interface DailyQualityResponse {
   date: string;
   rows: Array<{
     qualityName: string;
-    totalMeters: number;
-    averagePrice: number;
-    totalValue: number;
+    numberOfLoomsProducingThatQuality: number;
+    totalMetersProduced: number;
   }>;
   dayTotal: number;
 }

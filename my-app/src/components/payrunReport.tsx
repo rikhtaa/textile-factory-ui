@@ -1,11 +1,13 @@
 "use client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useQuery } from "@tanstack/react-query"
 import { getPayrunReport } from "@/http/api"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
 import { PayrunResponse } from "@/store"
+import { toast } from "sonner"
+import { Toaster } from "./ui/sonner"
 
 
 export function PayrunReport() {
@@ -16,18 +18,33 @@ export function PayrunReport() {
   const { data: report, isLoading, error } = useQuery({
     queryKey: ['payrun', fromDate, toDate, commit],
     queryFn: () => getPayrunReport(fromDate, toDate, commit),
-    enabled: !!fromDate && !!toDate
+    enabled: !!fromDate && !!toDate,
+    retry: 0,
   })
+  useEffect(() => {
+    if(error){
+      const err = error as any;
+      if(err?.response?.status === 500 ||err?.response?.data?.message.includes('ENOTFOUND') || err.message?.includes('ENOTFOUND')){
+        toast.error("No internet connection.")
+      }else{
+        toast.error(err?.response?.data?.message || err?.message );
+      }
+    }
+
+}, [error]);
 
   const payrunData: PayrunResponse = report?.data
 
   const totalGross = payrunData?.results?.reduce((sum, result) => sum + (result.gross || 0), 0) || 0
   const totalNet = payrunData?.results?.reduce((sum, result) => sum + (result.net || 0), 0) || 0
   const totalEmployees = payrunData?.results?.length || 0
-
+ 
   return (
     <Card>
-      <CardHeader><CardTitle>Payrun Report</CardTitle></CardHeader>
+      <CardHeader>
+        <CardTitle>Payrun Report</CardTitle>
+        <Toaster/>
+        </CardHeader>
       <CardContent>
         <div className="grid grid-cols-3 gap-4 mb-4">
           <div><Label>From Date</Label><Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} /></div>
@@ -47,11 +64,11 @@ export function PayrunReport() {
             
             <div className="bg-yellow-50 p-4 rounded-lg mb-4">
               <h4 className="font-semibold">Summary</h4>
-              <p>Total Gross: ${totalGross.toFixed(2)}</p>
-              <p>Total Net: ${totalNet.toFixed(2)}</p>
+              <p>Total Gross: {Math.floor(totalGross)}</p>
+              <p>Total Net: {Math.floor(totalNet)}</p>
               <p>Employees: {totalEmployees}</p>
               {payrunData.runId && (
-                <p className="text-green-600 font-semibold">Payrun Committed! Run ID: {payrunData.runId}</p>
+                <p className="text-green-600 font-semibold">Payrun Committed! name: {payrunData.name}</p>
               )}
             </div>
 
@@ -62,10 +79,10 @@ export function PayrunReport() {
                     <h4 className="font-semibold mb-3">{result.operatorName}</h4>
                     
                     <div className="bg-gray-50 p-3 rounded mb-3">
-                      <p><strong>Gross:</strong> ${result.gross.toFixed(2)}</p>
-                      <p><strong>Adjustments:</strong> ${result.adjustments.toFixed(2)}</p>
-                      <p><strong>Deductions:</strong> ${result.deductions.toFixed(2)}</p>
-                      <p><strong>Net Pay:</strong> ${result.net.toFixed(2)}</p>
+                      <p><strong>Gross: </strong>{Math.floor(result.gross)}</p>
+                      <p><strong>Adjustments: </strong>{Math.floor(result.adjustments)}</p>
+                      <p><strong>Deductions: </strong>{Math.floor(result.deductions)}</p>
+                      <p><strong>Net Pay: </strong> {Math.floor(result.net)}</p>
                     </div>
 
                     <h5 className="font-semibold mb-2">Production Breakdown</h5>
@@ -80,9 +97,9 @@ export function PayrunReport() {
                         {result.breakdown.map((item, index) => (
                           <tr key={index}>
                             <td className="border p-2">{item.qualityName}</td>
-                            <td className="border p-2">{item.meters}m</td>
-                            <td className="border p-2">${item.pricePerMeter}</td>
-                            <td className="border p-2">${item.amount.toFixed(2)}</td>
+                            <td className="border p-2">{Math.floor(item.meters)}</td>
+                            <td className="border p-2">{Math.floor(item.pricePerMeter)}</td>
+                            <td className="border p-2">{Math.floor(item.amount)}</td>
                           </tr>
                         ))}
                       </tbody>
