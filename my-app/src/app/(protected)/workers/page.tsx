@@ -26,6 +26,8 @@ const {data: workersData, refetch} = useQuery({
              toast.error("Only admin and manager can create Worker.");
             }else if(error.response?.data?.message.includes('E11000')){
                toast.error("This email is already registered. Please use a different email.");
+            }else if(error.response?.status >= 500){
+              toast.error("Internet issue please try again later");
             } else {
             toast.error(error.response?.data?.message || error.message || "An error occurred");
             }

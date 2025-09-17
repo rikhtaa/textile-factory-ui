@@ -18,6 +18,8 @@ export default function Page() {
        onError: (error: any) => {
     if (error.response?.status === 409) {
       toast.error("User already exists");
+    }else if(error.response?.status >= 500){
+        toast.error("Internet issue please try again later");
     } else {
       toast.error(error.response?.data?.message || error.message || "An error occurred");
     }

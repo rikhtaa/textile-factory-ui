@@ -24,6 +24,8 @@ export default function LoomsPage(){
             toast.error("Loom already exists");
             }else if(error.response?.data?.message.includes('E11000')){
                 toast.error("This Loom is already registered. Please use a different Loom Number.");
+            }else if(error.response?.status >= 500){
+               toast.error("Internet issue please try again later");
             }else {
             toast.error(error.response?.data?.message || error.message || "An error occurred");
             }
