@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { devtools  } from "zustand/middleware"
+import { devtools, persist } from "zustand/middleware"
 
 export interface CreateProduction {
   operatorId: string;
@@ -157,9 +157,19 @@ interface AuthState{
 }
 
 export const useAuthStore = create<AuthState>()(
-   devtools((set)=>({
+   devtools(
+    persist(
+    (set)=>({
     user: null,
     setUser: (user)=> set({user}),
-    logout: ()=> set({user: null})
-   }))
-)
+    logout: ()=>{
+      localStorage.removeItem("auth-token")
+     set({user: null})
+    }
+    }),
+     {
+        name: "auth-storage",
+      }
+    )
+    )
+  )
