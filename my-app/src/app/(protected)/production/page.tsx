@@ -17,7 +17,7 @@ export default function Page() {
         },
        onError: (error: any) => {
     if (error.response?.status === 409) {
-      toast.error("User already exists");
+      toast.error("This operator, loom, and quality combination already exists for this date. Please change one of them.");
     }else if(error.response?.status >= 500){
         toast.error("Internet issue please try again later");
     } else {
