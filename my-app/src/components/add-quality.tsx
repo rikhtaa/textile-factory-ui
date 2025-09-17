@@ -11,15 +11,19 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { Quality } from "@/store"
+import { Toaster } from "./ui/sonner"
+import { toast } from "sonner"
 
 
 interface AddWorkerProps extends React.ComponentProps<"div"> {
   onFormSubmit?: (formData: Quality) => void;
+  isPending: boolean | undefined
 }
 
 export function AddQuality({
   className,
   onFormSubmit,
+  isPending,
   ...props
 }: AddWorkerProps){
   const [formData, setFormData] = useState<Quality>({
@@ -31,6 +35,13 @@ export function AddQuality({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+     if (
+       !formData.name ||
+    !formData.pricePerMeter
+  ){
+    toast.error("Please fill in all required fields.");
+    return;
+  }
     if (onFormSubmit) {
       const { _id, ...qualityData } = formData;
        onFormSubmit(qualityData as Quality);
@@ -48,6 +59,7 @@ export function AddQuality({
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Add Qualities</CardTitle>
+          <Toaster/>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
@@ -76,12 +88,13 @@ export function AddQuality({
                   onChange={(e) =>
                     setFormData({ ...formData, pricePerMeter: Number(e.target.value) })
                   }
+                  onWheel={(e) => e.currentTarget.blur()}
                 />
               </div>
 
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                  Create
+                <Button type="submit" className="w-full" disabled={isPending}>
+                {isPending ? 'Creating...' : 'Create'}
                 </Button>
               </div>
             </div>
