@@ -1,14 +1,21 @@
 "use client"
 import { AddBeam } from "@/components/addBeam";
-import { createBeam } from "@/http/api";
+import { BeamsTable } from "@/components/BeamsTable";
+import { createBeam, getAllBeams } from "@/http/api";
 import { Beam } from "@/store";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 export default function Page() {
-        const {mutate: userMutate, isPending} = useMutation({
-        mutationKey: ['Beam'],
+    const {data: beamsData, refetch} = useQuery({
+        queryKey: ['beam'],
+        queryFn: getAllBeams,
+    })
+    
+    const {mutate: userMutate, isPending} = useMutation({
+        mutationKey: ['beam'],
         mutationFn: createBeam, 
         onSuccess: ()=>{
+            refetch()
             toast.success("Beam has been created");
         },
        onError: (error: any) => {
@@ -34,6 +41,7 @@ export default function Page() {
     <div className='flex flex-col gap-7 w-[85%] py-[1rem]'>
     <h2 className='text-black text-4xl font-bold'>Beams</h2>
      <AddBeam  onFormSubmit={handleFormData} isPending={isPending}/>
+    <BeamsTable beams={beamsData?.data || []}/>   
     </div>
     </div>
   )

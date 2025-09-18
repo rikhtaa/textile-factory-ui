@@ -45,3 +45,4 @@ export const get15DayOperatorReport = (operatorId: string, startDate: string) =>
 export const getBeamsReport = (dateFrom: string, dateTo: string, loomId?: string) => api.get('/beams/report', { params: { dateFrom, dateTo, ...(loomId && { loomId })  } })
 export const getAllFactories = () => api.get('/factories')
 export const createBeam = (beam: Beam)=> api.post('/beams', beam)
+export const getAllBeams = ()=> api.get('/beams')

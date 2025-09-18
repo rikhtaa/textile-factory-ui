@@ -31,15 +31,14 @@ export function AddBeam({
   const [formData, setFormData] = useState<Beam>({
     beamNumber: '',
     totalMeters: 0,
-    isClosed: true,
+    isClosed: false,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
      if (
     !formData.beamNumber ||
-    !formData.totalMeters ||
-    !formData.isClosed 
+    !formData.totalMeters
     ){
     toast.error("Please fill in all required fields.");
     return;
@@ -51,7 +50,7 @@ export function AddBeam({
     setFormData({
       beamNumber: '',
       totalMeters: 0,
-      isClosed: true,
+      isClosed: false,
     });
   };
 
@@ -93,36 +92,6 @@ export function AddBeam({
                 />
               </div>
              
-              {/* <div className="grid gap-3">
-                <Label htmlFor="producedMeters">Produced Meters</Label>
-                <Input
-                  id="producedMeters"
-                  type="number"
-                  placeholder="11223"
-                  required
-                  value={formData.producedMeters}
-                  onChange={(e) =>
-                    setFormData({ ...formData, producedMeters: Number(e.target.value) })
-                  }
-                  onWheel={(e) => e.currentTarget.blur()}
-                  />
-              </div>
-
-              <div className="grid gap-3">
-                <Label htmlFor="remainingMeters">Remaining Meters</Label>
-                <Input
-                  id="remainingMeters"
-                  type="remainingMeters"
-                  placeholder="11.2"
-                  required
-                  value={formData.remainingMeters}
-                  onChange={(e) =>
-                    setFormData({ ...formData, remainingMeters: Number(e.target.value) })
-                  }
-                  onWheel={(e) => e.currentTarget.blur()}
-                />
-              </div> */}
-
               <div className="grid gap-3">
                 <Label>Beam Status</Label>
                 <DropdownMenu>
@@ -136,10 +105,16 @@ export function AddBeam({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent> 
-                    <DropdownMenuItem onSelect={() => setFormData({...formData, isClosed: false})}>
+                    <DropdownMenuItem onSelect={() =>
+                      { 
+                        setFormData({...formData, isClosed: false})
+                      }}>
                       Open
                     </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => setFormData({...formData, isClosed: true})}>
+                    <DropdownMenuItem onSelect={() =>
+                    {
+                       setFormData({...formData, isClosed: true})
+                    }}>
                       Closed
                     </DropdownMenuItem>
                   </DropdownMenuContent>

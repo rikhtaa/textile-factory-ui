@@ -2,7 +2,7 @@ import { create } from "zustand"
 import { devtools, persist } from "zustand/middleware"
 
 export interface Beam{
-  _id?: string
+  _id?: string | undefined
   beamNumber: string
   totalMeters: number
   isClosed: boolean
