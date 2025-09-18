@@ -1,4 +1,4 @@
-import { BulkProductionImport, CreateProduction, Loom, ProductionFilters, ProductionRecord, Quality, Worker, WorkerCredentails } from "@/store";
+import { Beam, BulkProductionImport, CreateProduction, Loom, ProductionFilters, ProductionRecord, Quality, Worker, WorkerCredentails } from "@/store";
 import { api } from "./client";
 
 export const login = (credentials: WorkerCredentails) => api.post('/auth/login', credentials)
@@ -44,3 +44,4 @@ export const getPayrunReport = (from: string, to: string, commit?: boolean) => a
 export const get15DayOperatorReport = (operatorId: string, startDate: string) => api.get('/reports/15day-operator', { params: { operatorId, startDate } })
 export const getBeamsReport = (dateFrom: string, dateTo: string, loomId?: string) => api.get('/beams/report', { params: { dateFrom, dateTo, ...(loomId && { loomId })  } })
 export const getAllFactories = () => api.get('/factories')
+export const createBeam = (beam: Beam)=> api.post('/beams', beam)

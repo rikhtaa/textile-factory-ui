@@ -1,6 +1,13 @@
 import { create } from "zustand"
 import { devtools, persist } from "zustand/middleware"
 
+export interface Beam{
+  _id?: string
+  beamNumber: string
+  totalMeters: number
+  isClosed: boolean
+}
+
 export interface CreateProduction {
   operatorId: string;
   loomId: string;

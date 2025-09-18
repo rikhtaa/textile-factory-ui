@@ -35,7 +35,7 @@ const data = {
     },
     {
       title: "Beams",
-      url: "/beams",
+      url: "/beam",
     },
     
   ],
