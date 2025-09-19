@@ -4,20 +4,25 @@ import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { useQuery } from "@tanstack/react-query"
-import { getAllFactories, getAllQualities, getListProduction, getLooms, getWorkers } from "@/http/api"
-import { Factory, Loom, ProductionRecord, Quality, Worker } from "@/store"
+import { getAllBeams, getAllFactories, getAllQualities, getLooms, getWorkers } from "@/http/api"
+import { Beam, BeamResponse, Factory, Loom, ProductionRecord, Quality, Worker } from "@/store"
 import { CustomCombobox } from "./addProduction"
-
-
-export function ProductionTable() {
-  const [filters, setFilters] = useState({
-    date: "",
-    loomId: "",
-    factoryId: "",
-    operatorId: ""
-  })
-
+ interface FilterType {
+  date: string;
+  loomId: string;
+  factoryId: string;
+  operatorId: string;
+}
+interface ProductionTableProps {
+  filters: FilterType;
+  setFilters: (filter: any) => void;
+  productionData: ProductionRecord[];
+  isLoading: boolean;
+  error?: Error | null;
+}
+export function ProductionTable({filters, setFilters, productionData, isLoading,   error = null}: ProductionTableProps ) {
     const [openDropdowns, setOpenDropdowns] = useState({
+      beam: false,
       operator: false,
       factory: false,
       loom: false,
@@ -25,12 +30,6 @@ export function ProductionTable() {
       shift: false
     });
   
-  
-
-  const { data: productionData, isLoading, error } = useQuery({
-    queryKey: ['production', filters],
-    queryFn: () => getListProduction(filters)
-  })
     const { data: factoriesData } = useQuery({
     queryKey: ['factories'],
     queryFn: getAllFactories 
@@ -47,10 +46,15 @@ const { data: operatorsData } = useQuery({
       queryKey: ['workers'],
       queryFn: getWorkers
   })
+const { data: beamsData } = useQuery({
+      queryKey: ['beam'],
+      queryFn: getAllBeams
+})
+
 
   
   const handleFilterChange = (key: keyof typeof filters, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value,
+    setFilters((prev: any) => ({ ...prev, [key]: value,
       ...(key === 'factoryId' && { loomId: '' }) 
      }))
   }
@@ -63,11 +67,12 @@ const { data: operatorsData } = useQuery({
   if (isLoading) return <div>Loading production records...</div>
   if (error) return <div>Error loading records</div>
 
-  const records: ProductionRecord[] = productionData?.data || []
+  const records: ProductionRecord[] = productionData || []
   const factories: Factory[] = factoriesData?.data || []
   const allLooms: Loom[] = loomsData?.data || []
   const qualities: Quality[] = qualitiesData?.data || []
   const operators: Worker[] = operatorsData?.data || []
+  const beams: BeamResponse[] = beamsData?.data || []
 
     const factoryMap = new Map()
     factories.forEach(factory => {
@@ -85,6 +90,16 @@ const { data: operatorsData } = useQuery({
   operators.forEach(operator => {
     operatorsMap.set(operator._id, operator.name)
   })
+  
+ const beamsMap = new Map<string, { number: string; remaining: number }>();
+beams.forEach(beam => {
+  if (beam._id) {
+    beamsMap.set(beam._id, { 
+      number: beam.beamNumber,
+      remaining: beam.remainingMeters
+    });
+  }
+});  
   
 
   return (
@@ -151,6 +166,8 @@ const { data: operatorsData } = useQuery({
             <tr className="bg-gray-100">
               <th className="border p-2">Date</th>
               <th className="border p-2">Operator</th>
+              <th className="border p-2">Beam</th>
+              <th className="border p-2">Remaining Beam</th>
               <th className="border p-2">Loom</th>
               <th className="border p-2">Factory</th>
               <th className="border p-2">Quality</th>
@@ -160,13 +177,21 @@ const { data: operatorsData } = useQuery({
             </tr>
           </thead>
           <tbody>
-            {records.map((record) => (
+            {records.map((record) => {
+                const beamInfo = beamsMap.get(record.beamId); 
+              return(
               <tr key={record._id}>
                 <td className="border p-2">
                   {new Date(record.date).toLocaleDateString()}
                 </td>
                 <td className="border p-2">
                   {operatorsMap.get(record.operatorId) || record.operatorId}
+                </td>
+                <td className="border p-2">
+                  {beamInfo ? beamInfo.number : record.beamId || 'No beam'}
+                </td>
+                <td className="border p-2">
+                {beamInfo ? `${beamInfo.remaining}` : '-'}
                 </td>
                 <td className="border p-2">
                   {LoomsMap.get(record.loomId) || record.loomId}
@@ -181,11 +206,11 @@ const { data: operatorsData } = useQuery({
                 <td className="border p-2">{record.meterProduced}</td>
                 <td className="border p-2">{record.notes}</td>
               </tr>
-            ))}
-            
+            )
+            })}
             {records.length === 0 && (
               <tr>
-                <td colSpan={7} className="border p-4 text-center text-gray-500">
+                <td colSpan={10} className="border p-4 text-center text-gray-500">
                   No production records found
                 </td>
               </tr>
@@ -198,7 +223,7 @@ const { data: operatorsData } = useQuery({
         <div className="bg-blue-50 p-4 rounded-lg">
           <h3 className="font-semibold">Summary</h3>
           <p>Total Records: {records.length}</p>
-          <p>Total Meters: {records.reduce((sum, record) => sum + record.meterProduced, 0)}</p>
+          <p>Total Meters: { Math.floor(records.reduce((sum, record) => sum + record.meterProduced, 0))}</p>
         </div>
       )}
     </div>

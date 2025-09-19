@@ -1,34 +1,45 @@
 'use client'
 import { AddProduction } from '@/components/addProduction'
 import { ProductionTable } from '@/components/productionTable';
-import { createProduction } from '@/http/api';
+import { createProduction, getListProduction } from '@/http/api';
 import { CreateProduction } from '@/store';
-import { useMutation } from '@tanstack/react-query';
-import React from 'react'
+import { useMutation, useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react'
 import { toast } from 'sonner';
 
 export default function Page() {
-
-    const {mutate: userMutate, error, isSuccess, isPending} = useMutation({
-        mutationKey: ['produciton'],
-        mutationFn: createProduction, 
-        onSuccess: ()=>{
-              toast.success("User has been created");
-        },
-       onError: (error: any) => {
-    if (error.response?.status === 409) {
-      toast.error("This operator, loom, and quality combination already exists for this date. Please change one of them.");
-    }else if(error.response?.status >= 500){
-        toast.error("Internet issue please try again later");
-    } else {
-      toast.error(error.response?.data?.message || error.message || "An error occurred");
-    }
-  },
+  const [filters, setFilters] = useState({
+      date: "",
+      loomId: "",
+      factoryId: "",
+      operatorId: ""
     })
+  const {mutate: userMutate, error, isSuccess, isPending} = useMutation({
+      mutationKey: ['produciton'],
+      mutationFn: createProduction, 
+      onSuccess: ()=>{
+           refetch()
+            toast.success("User has been created");
+      },
+     onError: (error: any) => {
+  if (error.response?.status === 409) {
+    toast.error("This operator, loom, and quality combination already exists for this date. Please change one of them.");
+  }else if(error.response?.status >= 500){
+      toast.error("Internet issue please try again later");
+  } else {
+    toast.error(error.response?.data?.message || error.message || "An error occurred");
+  }
+},
+  })
+    const { data: productionData, isLoading, refetch } = useQuery({
+      queryKey: ['production', filters],
+      queryFn: () => getListProduction(filters)
+    })
+
   
 
     const handleFormData = (formData: CreateProduction) => {
-            userMutate(formData);
+    userMutate(formData);
     }
     
   return (
@@ -36,7 +47,12 @@ export default function Page() {
           <div className='flex flex-col gap-7 w-[85%] py-[1rem]'>
             <h2 className='text-black text-4xl font-bold'>Production</h2>
             <AddProduction onFormSubmit={handleFormData}  onSucess={isSuccess} isPending={isPending} />
-            <ProductionTable/>
+            <ProductionTable 
+            filters={filters}
+            setFilters={setFilters}
+            productionData={productionData?.data || []} 
+            isLoading={isLoading}
+            error={error} />
          </div>
           </div>
   )

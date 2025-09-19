@@ -10,9 +10,9 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useEffect, useState, useMemo } from "react"
-import { CreateProduction, Factory, Loom, Quality, Worker } from "@/store"
+import { Beam, CreateProduction, Factory, Loom, Quality, Worker } from "@/store"
 import { useQuery } from "@tanstack/react-query"
-import { getAllFactories, getAllQualities, getLooms, getWorkers } from "@/http/api"
+import { getAllBeams, getAllFactories, getAllQualities, getLooms, getWorkers } from "@/http/api"
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react"
 import {
   Command,
@@ -105,6 +105,7 @@ export function AddProduction({
 }: AddProductionProps) {
   const [filteredLooms, setFilteredLooms] = useState<Loom[]>([])
   const [formData, setFormData] = useState<CreateProduction>({
+    beamId: '',
     operatorId: '',
     factoryId: '',
     loomId: '',
@@ -116,6 +117,7 @@ export function AddProduction({
   });
 
   const [openDropdowns, setOpenDropdowns] = useState({
+    beam: false,
     operator: false,
     factory: false,
     loom: false,
@@ -126,6 +128,7 @@ export function AddProduction({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
      if (
+    !formData.beamId ||
     !formData.operatorId ||
     !formData.factoryId ||
     !formData.loomId ||
@@ -137,6 +140,7 @@ export function AddProduction({
   }
     
     const productionData = {
+      beamId: formData.beamId,
       operatorId: formData.operatorId,
       loomId: formData.loomId,
       factoryId: formData.factoryId,
@@ -152,6 +156,7 @@ export function AddProduction({
     }
 
     setFormData({
+      beamId: '',
       operatorId: '',
       loomId: '',
       factoryId: '',
@@ -183,10 +188,16 @@ export function AddProduction({
     queryFn: getWorkers
   })
 
+  const { data: beamsData } = useQuery({
+    queryKey: ['beam'],
+    queryFn: getAllBeams
+  })
+
   const factories: Factory[] = factoriesData?.data || []
   const allLooms: Loom[] = loomsData?.data || []
   const qualities: Quality[] = qualitiesData?.data || []
   const workers: Worker[] = operatorsData?.data || []
+  const beams: Beam[] = beamsData?.data || []
 
   const operators = useMemo(() => 
     workers.filter(worker => worker.role === 'operator'), 
@@ -211,6 +222,18 @@ export function AddProduction({
         <CardContent>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6 w-[50%]">
+              <div className="grid gap-3">
+                <Label htmlFor="beamId">Beam</Label>
+                <CustomCombobox
+                  value={formData.beamId}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, beamId: value }))}
+                  items={beams.map(b => ({ value: b._id || 'unknown', label: b.beamNumber }))}
+                  placeholder="Select Beam"
+                  open={openDropdowns.beam}
+                  onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, beam: open }))}
+                />
+              </div>
+
               <div className="grid gap-3">
                 <Label htmlFor="operatorId">Operator</Label>
                 <CustomCombobox
