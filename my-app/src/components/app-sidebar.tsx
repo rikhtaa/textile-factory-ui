@@ -37,6 +37,10 @@ const data = {
       title: "Beams",
       url: "/beam",
     },
+    {
+      title: "Beams Production",
+      url: "/beamProduction",
+    },
     
   ],
 }

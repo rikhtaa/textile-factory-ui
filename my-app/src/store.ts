@@ -8,7 +8,17 @@ export interface Beam{
   isClosed: boolean
 }
 
+export interface BeamResponse{
+  _id?: string | undefined
+  beamNumber: string
+  totalMeters: number
+  isClosed: boolean
+  producedMeters: number
+  remainingMeters: number
+}
 export interface CreateProduction {
+  beamId: string
+  remainingBeam?: string
   operatorId: string;
   loomId: string;
   factoryId: string
@@ -32,6 +42,14 @@ export interface BeamsReportResponse {
   loomId: string | null;
   totalMeters: number;
   count: number;
+  details?: { // ✅ Add this optional details array
+    _id: string;
+    beamNumber: string;
+    totalMeters: number;
+    producedMeters: number;
+    remainingMeters: number;
+    isClosed: boolean;
+  }[];
 }
 
 export interface BulkProductionImport{
