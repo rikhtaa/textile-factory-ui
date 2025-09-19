@@ -46,3 +46,5 @@ export const getBeamsReport = (dateFrom: string, dateTo: string, loomId?: string
 export const getAllFactories = () => api.get('/factories')
 export const createBeam = (beam: Beam)=> api.post('/beams', beam)
 export const getAllBeams = ()=> api.get('/beams')
+export const deleteBeam = (id: string)=>api.delete(`/beams/${id}`)
+export const updateBeam = (id: string, beam: Partial<Beam>)=> api.put(`/beams/${id}`, beam)
