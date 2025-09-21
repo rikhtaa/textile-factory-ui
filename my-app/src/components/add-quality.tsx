@@ -29,8 +29,7 @@ export function AddQuality({
   const [formData, setFormData] = useState<Quality>({
     _id: '',
     name: '',
-    pricePerMeter: 0.,
-    effectiveFrom: new Date(),
+    pricePerMeter: 0,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -50,22 +49,21 @@ export function AddQuality({
       _id: '',
       name: '',
       pricePerMeter: 0.,
-      effectiveFrom: new Date(),
     });
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6 sm:gap-6", className)} {...props}>
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Add Qualities</CardTitle>
+          <CardTitle className="text-lg sm:text-xl">Add Qualities</CardTitle>
           <Toaster/>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-6 w-[50%]">
-              <div className="grid gap-3">
-                <Label htmlFor="name">Name</Label>
+        <CardContent className="px-4 sm:px-6">
+          <form onSubmit={handleSubmit} className="w-full">
+            <div className="flex flex-col gap-4 sm:gap-6 w-full md:w-[80%] lg:w-[60%] xl:w-[50%]">
+              <div className="grid gap-2 sm:gap-3">
+                <Label htmlFor="name" className="text-sm sm:text-base">Name</Label>
                 <Input
                   id="name"
                   type="text"
@@ -75,10 +73,11 @@ export function AddQuality({
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
+                   className="text-sm sm:text-base" 
                 />
               </div>
-              <div className="grid gap-3">
-                <Label htmlFor="pricePerMeter">Price Per Meter</Label>
+              <div className="grid gap-2 sm:gap-3">
+                <Label htmlFor="pricePerMeter" className="text-sm sm:text-base">Price Per Meter</Label>
                 <Input
                   id="pricePerMeter"
                   type="number"
@@ -89,11 +88,12 @@ export function AddQuality({
                     setFormData({ ...formData, pricePerMeter: Number(e.target.value) })
                   }
                   onWheel={(e) => e.currentTarget.blur()}
+                  className="text-sm sm:text-base"
                 />
               </div>
 
-              <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full" disabled={isPending}>
+              <div className="flex flex-col gap-2 sm:gap-3">
+                <Button type="submit" className="w-full text-sm sm:text-base" disabled={isPending} size="sm">
                 {isPending ? 'Creating...' : 'Create'}
                 </Button>
               </div>

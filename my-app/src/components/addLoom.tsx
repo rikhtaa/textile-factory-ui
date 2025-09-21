@@ -74,17 +74,17 @@ export function AddLoom({
 
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6 sm:gap-6", className)} {...props}>
       <Card className="w-full">
-        <CardHeader className="flex justify-between">
-          <CardTitle>Add new Loom</CardTitle>
+        <CardHeader>
+          <CardTitle className="text-lg sm:text-xl">Add new Loom</CardTitle>
           <Toaster />
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-6 w-[50%]">
-              <div className="grid gap-3">
-                <Label htmlFor="loomNumber">loom Number</Label>
+        <CardContent className="px-4 sm:px-6">
+          <form onSubmit={handleSubmit} className="w-full">
+            <div className="flex flex-col gap-4 sm:gap-6 w-full md:w-[80%] lg:w-[60%] xl:w-[50%]">
+              <div className="grid gap-2 sm:gap-3">
+                <Label htmlFor="loomNumber" className="text-sm sm:text-base">loom Number</Label>
                 <Input
                   id="loomNumber"
                   type="text"
@@ -94,9 +94,10 @@ export function AddLoom({
                   onChange={(e) =>
                     setFormData({ ...formData, loomNumber: e.target.value })
                   }
+                  className="text-sm sm:text-base" 
                 />
               </div>
-              <div className="grid gap-3">
+              <div className="grid gap-2 sm:gap-3">
               <select
   value={formData.factoryId}
   onChange={(e) => setFormData({...formData, factoryId: e.target.value})}
@@ -112,7 +113,7 @@ export function AddLoom({
 </select>
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid gap-2 sm:gap-3">
                 <Label htmlFor="section">Section</Label>
                 <Input
                   id="section"
@@ -122,11 +123,12 @@ export function AddLoom({
                   onChange={(e) =>
                     setFormData({ ...formData, section: e.target.value })
                   }
+                  className="text-sm sm:text-base"
                 />
               </div>
 
-               <div className="grid gap-3">
-                <Label>Status</Label>
+               <div className="grid gap-2 sm:gap-3">
+                <Label className="text-sm sm:text-base">Status</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button 
@@ -148,7 +150,7 @@ export function AddLoom({
                 </DropdownMenu>
               </div> 
 
-              <div className="grid gap-3">
+              <div className="grid gap-2 sm:gap-3">
                 <Label htmlFor="email">Beam Info</Label>
                 <Input
                   id="beamInfo"
@@ -159,11 +161,12 @@ export function AddLoom({
                   onChange={(e) =>
                     setFormData({ ...formData, beamInfo: e.target.value })
                   }
+                   className="text-sm sm:text-base" 
                 />
               </div>
              
-              <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full" disabled={isPending}>
+              <div className="flex flex-col gap-2 sm:gap-3">
+                <Button type="submit" className="w-full text-sm sm:text-base" size="sm" disabled={isPending}>
                   {isPending ? 'Creating...' : 'Create'}
                 </Button>
               </div>

@@ -20,40 +20,50 @@ export function BeamsReport() {
     queryKey: ['beams-report', dateFrom, dateTo, loomId],
     queryFn: () => getBeamsReport(dateFrom, dateTo, String(loomId)),
     enabled: !!dateFrom && !!dateTo
+
   })
 
   const { data: loomsData } = useQuery({
     queryKey: ['looms'],
     queryFn: getLooms
   })
-
   const allLooms: Loom[] = loomsData?.data || []
   const beamsData: BeamsReportResponse = report?.data
 
+  const loomMap = new Map();
+  allLooms.forEach(loom => {
+  if (loom._id) {
+    loomMap.set(loom._id, loom.loomNumber);
+  }
+});
+
+
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>Beams Production Report</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          <div>
+      <CardContent className="p-3 sm:p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <div className="space-y-2">
             <Label>From Date</Label>
             <Input 
               type="date" 
               value={dateFrom} 
               onChange={(e) => setDateFrom(e.target.value)} 
+              className="w-full"
             />
           </div>
-          <div>
+          <div className="space-y-2">
             <Label>To Date</Label>
             <Input 
               type="date" 
               value={dateTo} 
               onChange={(e) => setDateTo(e.target.value)} 
+              className="w-full"
             />
           </div>
-          <div>
+          <div className="space-y-2">
             <Label>Loom</Label>
             <CustomCombobox
               value={loomId}
@@ -69,24 +79,24 @@ export function BeamsReport() {
           </div>
         </div>
 
-        {isLoading && <div>Loading report...</div>}
-        {error && <div className="text-red-500">Error loading report</div>}
+        {isLoading && <div className="text-center py-8">Loading report...</div>}
+        {error && <div className="text-red-500 text-center py-4">Error loading report</div>}
         
         {beamsData ? (
-          <div>
-            <h3 className="font-semibold mb-4">
-              Beams Report for {beamsData.from} to {beamsData.to}
-              {beamsData.loomId && ` (Loom: ${beamsData.loomId})`}
+          <div className="space-y-6">
+            <h3 className="font-semibold  text-lg text-center sm:text-left">
+              Beams Report for { beamsData.from }  to { beamsData.to }
+              {beamsData.loomId && ` (Loom: ${loomMap.get(beamsData.loomId) || beamsData.loomId})`}
             </h3>
             
-            <div className="bg-blue-50 p-4 rounded-lg mb-4">
-              <h4 className="font-semibold">Summary</h4>
-              <div className="grid grid-cols-2 gap-4">
+            <div className="bg-blue-50 p-4 rounded-lg border">
+              <h4 className="font-semibold text-base mb-4">Summary</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div>
                   <p className="text-sm text-gray-600">Total Production</p>
                   <p className="text-2xl font-bold">{beamsData.totalMeters}</p>
                 </div>
-                <div>
+                <div className="text-center sm:text-left">
                   <p className="text-sm text-gray-600">Total Beams</p>
                   <p className="text-2xl font-bold">{beamsData.count}</p>
                 </div>
@@ -95,7 +105,7 @@ export function BeamsReport() {
               <Button 
                 onClick={() => setShowDetails(!showDetails)} 
                 variant="outline" 
-                className="mt-4"
+                className="w-full sm:w-auto"
               >
                 {showDetails ? 'Hide Beam Details' : 'Show Beam Details'}
               </Button>
@@ -104,34 +114,70 @@ export function BeamsReport() {
             {showDetails && beamsData.details && beamsData.details.length > 0 && (
               <div className="mt-6">
                 <h4 className="font-semibold mb-3">Beam Details</h4>
-                <table className="w-full border-collapse border">
-                  <thead>
-                    <tr className="bg-gray-100">
-                      <th className="border p-2">Beam Number</th>
-                      <th className="border p-2">Total Meters</th>
-                      <th className="border p-2">Produced</th>
-                      <th className="border p-2">Remaining</th>
-                      <th className="border p-2">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {beamsData.details.map((beam) => (
-                      <tr key={beam._id}>
-                        <td className="border p-2">{beam.beamNumber}</td>
-                        <td className="border p-2">{Math.floor(beam.totalMeters)}</td>
-                        <td className="border p-2">{Math.floor(beam.producedMeters)}</td>
-                        <td className="border p-2">{Math.floor(beam.remainingMeters)}</td>
-                        <td className="border p-2">
+                  <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full border-collapse border text-sm">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border p-2">Beam Number</th>
+                        <th className="border p-2">Total Meters</th>
+                        <th className="border p-2">Produced</th>
+                        <th className="border p-2">Remaining</th>
+                        <th className="border p-2">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {beamsData.details.map((beam) => (
+                        <tr key={beam._id}>
+                          <td className="border p-2">{beam.beamNumber}</td>
+                          <td className="border p-2 text-right">{Math.floor(beam.totalMeters)}</td>
+                          <td className="border p-2 text-right">{Math.floor(beam.producedMeters)}</td>
+                          <td className="border p-2 text-right">{Math.floor(beam.remainingMeters)}</td>
+                          <td className="border p-2 text-center">
+                            <span className={`px-2 py-1 text-xs rounded ${
+                              beam.isClosed ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                            }`}>
+                              {beam.isClosed ? 'Closed' : 'Open'}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="sm:hidden space-y-3">
+                  {beamsData.details.map((beam) => (
+                    <div key={beam._id} className="border rounded-lg p-4 bg-white">
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="space-y-1">
+                          <p className="font-semibold text-gray-600">Beam Number</p>
+                          <p>{beam.beamNumber}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="font-semibold text-gray-600">Status</p>
                           <span className={`px-2 py-1 text-xs rounded ${
                             beam.isClosed ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
                           }`}>
                             {beam.isClosed ? 'Closed' : 'Open'}
                           </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="font-semibold text-gray-600">Total Meters</p>
+                          <p>{Math.floor(beam.totalMeters)}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="font-semibold text-gray-600">Produced</p>
+                          <p>{Math.floor(beam.producedMeters)}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="font-semibold text-gray-600">Remaining</p>
+                          <p>{Math.floor(beam.remainingMeters)}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 

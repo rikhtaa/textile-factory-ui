@@ -32,6 +32,9 @@ export function Operator15DayReport() {
 
   const operatorData: Operator15DayResponse = report?.data
 
+    const allQualities = operatorData?.daily?.flatMap(day => 
+    day.qualities.map(quality => ({ ...quality, date: day.date }))
+  ) || [];
 
   const totalMeters =
   operatorData?.daily?.reduce(
@@ -42,66 +45,106 @@ export function Operator15DayReport() {
 
 
   return (
-    <Card>
-      <CardHeader><CardTitle>15-Day Operator Report</CardTitle></CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div><Label>Operator</Label>
-           <CustomCombobox
-            value={operatorId}
-            onValueChange={(value) => setOperatorId(value)}
-            items={operators.map(op => ({ value: op._id || 'unknown', label: op.name }))}
-            placeholder="Select operator"
-            open={openDropdowns.operator}
-            onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, operator: open }))}
+      <Card className="w-full max-w-5xl mx-auto">
+      <CardHeader><CardTitle  className="text-lg md:text-xl">15-Day Operator Report</CardTitle></CardHeader>
+      <CardContent className="p-3 sm:p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          <div className="space-y-2">
+            <Label>Operator</Label>
+            <CustomCombobox
+              value={operatorId}
+              onValueChange={(value) => setOperatorId(value)}
+              items={operators.map(op => ({ value: op._id || 'unknown', label: op.name }))}
+              placeholder="Select operator"
+              open={openDropdowns.operator}
+              onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, operator: open }))}
             />
           </div>
-          <div><Label>Start Date</Label><Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} /></div>
+          <div className="space-y-2">
+            <Label>Start Date</Label>
+            <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full"/>
+          </div>
         </div>
 
-        {isLoading && <div>Loading...</div>}
-        {error && <div className="text-red-500">Error loading report</div>}
+        {isLoading && <div className="text-center py-8">Loading...</div>}
+        {error && <div className="text-red-500 text-center py-4">Error loading report</div>}
         
         {operatorData ? (
-          <div>
-            <h3 className="font-semibold mb-4">
+          <div className="space-y-6">
+            <h3 className="font-semibold text-base md:text-lg text-center sm:text-left">
               {operatorData.operatorName} - 15 Days from {operatorData.from} to {operatorData.to}
             </h3>
             
-            <div className="bg-purple-50 p-4 rounded-lg mb-4">
-              <h4 className="font-semibold">Summary</h4>
-              <p>Total Production: {totalMeters}</p>
-              <p>Total Payable: {operatorData.totalPayable || 0}</p>
+            <div className="bg-purple-50 p-4 rounded-lg border">
+              <h4 className="font-semibold text-base mb-3">Summary</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p><strong>Total Production:</strong> {totalMeters}</p>
+                </div>
+                <div>
+                  <p><strong>Total Payable:</strong> {operatorData.totalPayable || 0}</p>
+                </div>
+              </div>
             </div>
 
-            {operatorData.daily && operatorData.daily.length > 0 ? (
-              <table className="w-full border-collapse border">
-                <thead><tr className="bg-gray-100">
-                  <th className="border p-2">Quality</th>
-                  <th className="border p-2">Price per meter</th>
-                  <th className="border p-2">Meters</th>
-                  <th className="border p-2">Amount</th>
-                </tr></thead>
-                <tbody>
-                  {operatorData.daily.map((day, index) => (
-                      day.qualities.map((quality)=>(
-                        <tr key={index}>
-                          <td className="border p-2" key={quality._id}>{quality.qualityName }</td>
-                          <td className="border p-2" key={quality._id}>{quality.pricePerMeter}</td>
-                          <td className="border p-2" key={quality._id}>{quality.meters}</td>
-                          <td className="border p-2" key={quality._id}>{quality.amount}</td>
+            {allQualities.length > 0 ? (
+              <>
+                {/* Desktop Table */}
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full border-collapse border text-sm">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border p-2 text-left">Quality</th>
+                        <th className="border p-2 text-right">Price/m</th>
+                        <th className="border p-2 text-right">Meters</th>
+                        <th className="border p-2 text-right">Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {allQualities.map((quality, index) => (
+                        <tr key={index} className="hover:bg-gray-50">
+                          <td className="border p-2">{quality.qualityName}</td>
+                          <td className="border p-2 text-right">{quality.pricePerMeter}</td>
+                          <td className="border p-2 text-right">{quality.meters}</td>
+                          <td className="border p-2 text-right">{quality.amount}</td>
                         </tr>
-                      )))
-                    )
-                  }
-                </tbody>
-              </table>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="sm:hidden space-y-3">
+                  {allQualities.map((quality, index) => (
+                    <div key={index} className="border rounded-lg p-4 bg-white shadow-sm">
+                      <div className="grid grid-cols-2 gap-3 text-xs">
+                        <div className="space-y-1">
+                          <p className="font-semibold text-gray-600">Quality</p>
+                          <p>{quality.qualityName}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="font-semibold text-gray-600">Price/m</p>
+                          <p>{quality.pricePerMeter}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="font-semibold text-gray-600">Meters</p>
+                          <p>{quality.meters}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="font-semibold text-gray-600">Amount</p>
+                          <p className="font-bold">{quality.amount}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             ) : (
-              <div className="text-gray-500">No production data available for this period</div>
+              <div className="text-gray-500 text-center py-8">No production data available for this period</div>
             )}
           </div>
         ) : (
-          !isLoading && !error && <div className="text-gray-500">Enter operator ID and start date to generate report</div>
+          !isLoading && !error && <div className="text-gray-500 text-center py-8">Select operator and start date to generate report</div>
         )}
       </CardContent>
     </Card>

@@ -213,17 +213,17 @@ export function AddProduction({
   }, [formData.factoryId, allLooms])
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6 sm:gap-6", className)} {...props}>
       <Card className="w-full">
-        <CardHeader className="flex justify-between">
-          <CardTitle>Add Production</CardTitle>
+        <CardHeader>
+          <CardTitle className="text-lg sm:text-xl">Add Production</CardTitle>
           <Toaster />
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-6 w-[50%]">
-              <div className="grid gap-3">
-                <Label htmlFor="beamId">Beam</Label>
+          <form onSubmit={handleSubmit} className="w-full">
+            <div className="flex flex-col gap-4 sm:gap-6 w-full md:w-[80%] lg:w-[60%] xl:w-[50%]">
+              <div className="grid gap-2 sm:gap-3">
+                <Label className="text-sm sm:text-base" htmlFor="beamId">Beam</Label>
                 <CustomCombobox
                   value={formData.beamId}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, beamId: value }))}
@@ -247,7 +247,7 @@ export function AddProduction({
               </div>
 
               <div className="grid gap-3">
-                <Label htmlFor="factory">Factory</Label>
+                <Label className="text-sm sm:text-base" htmlFor="factory">Factory</Label>
                 <CustomCombobox
                   value={formData.factoryId}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, factoryId: value, loomId: '' }))}
@@ -260,7 +260,7 @@ export function AddProduction({
 
               {formData.factoryId && (
                 <div className="grid gap-3">
-                  <Label htmlFor="loom">Loom</Label>
+                  <Label className="text-sm sm:text-base" htmlFor="loom">Loom</Label>
                   <CustomCombobox
                     value={formData.loomId}
                     onValueChange={(value) => setFormData(prev => ({ ...prev, loomId: value }))}
@@ -276,7 +276,7 @@ export function AddProduction({
               )}
 
               <div className="grid gap-3">
-                <Label htmlFor="date">Date</Label>
+                <Label className="text-sm sm:text-base" htmlFor="date">Date</Label>
                 <Input
                   id="date"
                   type="date"
@@ -285,12 +285,12 @@ export function AddProduction({
                   onChange={(e) =>
                     setFormData({ ...formData, date: new Date(e.target.value) })
                   }
-          
+                  className="text-sm sm:text-base"
                 />
               </div>
 
               <div className="grid gap-3">
-                <Label htmlFor="quality">Quality</Label>
+                <Label className="text-sm sm:text-base" htmlFor="quality">Quality</Label>
                 <CustomCombobox
                   value={formData.qualityId}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, qualityId: value }))}
@@ -305,7 +305,7 @@ export function AddProduction({
               </div>
 
               <div className="grid gap-3">
-                <Label htmlFor="shift">Shift</Label>
+                <Label className="text-sm sm:text-base" htmlFor="shift">Shift</Label>
                 <CustomCombobox
                   value={String(formData.shift)}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, shift: value }))}
@@ -321,7 +321,7 @@ export function AddProduction({
               </div>
 
               <div className="grid gap-3">
-                <Label htmlFor="meterProduced">Meter Produced</Label>
+                <Label className="text-sm sm:text-base" htmlFor="meterProduced">Meter Produced</Label>
                 <Input
                   id="meterProduced"
                   type="number"
@@ -332,23 +332,24 @@ export function AddProduction({
                     setFormData({ ...formData, meterProduced: Number(e.target.value) })
                   }
                   onWheel={(e) => e.currentTarget.blur()}
+                  className="text-sm sm:text-base"
                 />
               </div>
 
               <div className="grid gap-3">
-                <Label htmlFor="notes">Notes</Label>
+                <Label className="text-sm sm:text-base" htmlFor="notes">Notes</Label>
                 <textarea
                   id="notes"
                   placeholder="Enter production notes, issues, observations..."
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   rows={4}
-                  className="w-full border rounded-md p-2"
+                  className="w-full border rounded-md text-sm sm:text-base"
                 />
               </div>
 
-              <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full" disabled={isPending}>
+              <div className="flex flex-col gap-3 sm:gap-3">
+                <Button type="submit" size="sm" className="w-full text-sm sm:text-base" disabled={isPending}>
                   {isPending ? 'Creating...' : 'Create'}
                 </Button>
               </div>

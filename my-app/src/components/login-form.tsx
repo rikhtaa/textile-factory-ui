@@ -13,10 +13,11 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { login } from "../http/api"
 import { useState } from "react"
 import { email } from "zod"
-import { LoginFormValues, useAuthStore } from "@/store"
+import { ApiErrorResponse, LoginFormValues, useAuthStore } from "@/store"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Toaster } from "./ui/sonner"
+import { AxiosError } from "axios"
 
 
 export function LoginForm({
@@ -42,10 +43,10 @@ export function LoginForm({
       setUser(response.data.user);
       router.push('/dashboard');
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<ApiErrorResponse>) => {
       if (error.response?.data?.message === "Invalid credentials") {
       toast.error("Wrong email or password. Please try again.");
-    }else if(error.response?.status >= 500){
+    }else if(error.response && error.response.status >= 500){
        toast.error("Internet issue please try again later");
     }else{
       toast.error(error.response?.data?.message || error.message || "An error occurred");

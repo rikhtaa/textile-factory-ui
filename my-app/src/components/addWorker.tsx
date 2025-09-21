@@ -70,17 +70,17 @@ export function AddWorker({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6 sm:gap-6", className)} {...props}>
       <Card className="w-full">
-        <CardHeader className="flex justify-between">
-          <CardTitle>Add new worker</CardTitle>
+        <CardHeader>
+          <CardTitle className="text-lg sm:text-xl">Add worker</CardTitle>
           <Toaster />
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-6 w-[50%]">
-              <div className="grid gap-3">
-                <Label htmlFor="name">Name</Label>
+        <CardContent className="px-4 sm:px-6">
+          <form onSubmit={handleSubmit} className="w-full">
+            <div className="flex flex-col gap-4 sm:gap-6 w-full md:w-[80%] lg:w-[60%] xl:w-[50%]">
+              <div className="grid gap-2 sm:gap-3">
+                <Label htmlFor="name" className="text-sm sm:text-base">Name</Label>
                 <Input
                   id="name"
                   type="text"
@@ -90,10 +90,11 @@ export function AddWorker({
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
+                   className="text-sm sm:text-base" 
                 />
               </div>
-              <div className="grid gap-3">
-                <Label>Role</Label>
+              <div className="grid gap-2 sm:gap-3">
+                <Label className="text-sm sm:text-base">Role</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button 
@@ -129,7 +130,7 @@ export function AddWorker({
                 </DropdownMenu>
               </div>
               
-              <div className="grid gap-3">
+              <div className="grid gap-2 sm:gap-3">
                 <Label htmlFor="phone">Phone</Label>
                 <Input
                   id="phone"
@@ -141,10 +142,11 @@ export function AddWorker({
                     setFormData({ ...formData, phone: Number(e.target.value) })
                   }
                   onWheel={(e) => e.currentTarget.blur()}
+                  className="text-sm sm:text-base"
                 />
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid gap-2 sm:gap-3">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
@@ -155,10 +157,11 @@ export function AddWorker({
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
+                  className="text-sm sm:text-base"
                 />
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid gap-2 sm:gap-3">
                 <Label htmlFor="hireDate">Hire Date</Label>
                 <Input
                   id="hireDate"
@@ -169,10 +172,11 @@ export function AddWorker({
                   onChange={(e) =>
                     setFormData({ ...formData, hireDate: new Date(e.target.value) })
                   }
+                  className="text-sm sm:text-base"
                 />
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid gap-2 sm:gap-3">
                 <Label>Status</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -195,7 +199,7 @@ export function AddWorker({
                 </DropdownMenu>
               </div> 
 
-              <div className="grid gap-3">
+              <div className="grid gap-2 sm:gap-3">
                 <div className="flex items-center">
                   <a
                     href="#"
@@ -213,10 +217,11 @@ export function AddWorker({
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
                   }
+                  className="text-sm sm:text-base"
                 />
               </div>
-              <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full" disabled={isPending}>
+              <div className="flex flex-col gap-3  sm:gap-3">
+                <Button type="submit" className="w-full  text-sm sm:text-base" disabled={isPending}>
                   {isPending ? 'Creating...' : 'Create'}
                 </Button>
               </div>

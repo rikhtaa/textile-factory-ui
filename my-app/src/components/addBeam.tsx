@@ -55,17 +55,17 @@ export function AddBeam({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="w-ful">
-        <CardHeader className="flex justify-between">
-          <CardTitle>Add new Beam</CardTitle>
+    <div className={cn("flex flex-col gap-6 sm:gap-6", className)} {...props}>
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-lg sm:text-xl">Add new Beam</CardTitle>
           <Toaster />
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-6 w-[50%]">
-              <div className="grid gap-3">
-                <Label htmlFor="beamNumber">Beam Number</Label>
+        <CardContent className="px-4 sm:px-6">
+          <form onSubmit={handleSubmit} className="w-full">
+            <div className="flex flex-col gap-4 sm:gap-6 w-full md:w-[80%] lg:w-[60%] xl:w-[50%]">
+              <div className="grid gap-2 sm:gap-3">
+                <Label htmlFor="beamNumber" className="text-sm sm:text-base">Beam Number</Label>
                 <Input
                   id="beamNumber"
                   type="text"
@@ -75,10 +75,11 @@ export function AddBeam({
                   onChange={(e) =>
                     setFormData({ ...formData, beamNumber: e.target.value })
                   }
+                  className="text-sm sm:text-base" 
                 />
               </div>
-              <div className="grid gap-3">
-                <Label htmlFor="totalMeters">Total Meters</Label>
+              <div className="grid gap-2 sm:gap-3">
+                <Label htmlFor="totalMeters" className="text-sm sm:text-base">Total Meters</Label>
                 <Input
                   id="totalMeters"
                   type="number"
@@ -89,11 +90,12 @@ export function AddBeam({
                     setFormData({ ...formData, totalMeters: Number(e.target.value) })
                   }
                   onWheel={(e) => e.currentTarget.blur()}
+                 className="text-sm sm:text-base" 
                 />
               </div>
              
-              <div className="grid gap-3">
-                <Label>Beam Status</Label>
+              <div className="grid gap-2 sm:gap-3">
+                <Label className="text-sm sm:text-base">Beam Status</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button 
@@ -121,8 +123,8 @@ export function AddBeam({
                 </DropdownMenu>
               </div> 
 
-              <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full" disabled={isPending}>
+              <div className="flex flex-col gap-3 sm:gap-3">
+                <Button type="submit" className="w-full text-sm sm:text-base" disabled={isPending}>
                   {isPending ? 'Creating...' : 'Create'}
                 </Button>
               </div>

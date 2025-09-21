@@ -1,10 +1,11 @@
 "use client"
-import { Worker } from "@/store"
+import { ApiErrorResponse, Worker } from "@/store"
 import { Button } from "./ui/button"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { deleteWorker, updateWorker } from "@/http/api"
 import { useState } from "react"
 import { toast } from "sonner"
+import { AxiosError } from "axios"
 
 export function WorkersTable({ workers }: { workers: Worker[] }) {
    const queryClient = useQueryClient()
@@ -25,10 +26,10 @@ export function WorkersTable({ workers }: { workers: Worker[] }) {
       queryClient.invalidateQueries({queryKey: ['workers']})
        toast.success("Worker removed successfully");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<ApiErrorResponse>) => {
       if (error.response?.status === 404) {
        toast.error("Woker have been already deleted");
-      }else if(error.response?.status >= 500){
+      }else if(error.response && error.response.status >= 500){
        toast.error("Internet issue please try again later");
       }
       else{
@@ -55,7 +56,7 @@ const updateMutation = useMutation({
       setEditingWorker(null)
       toast.success("Woker has been updated");
     },
-     onError: (error: any) => {
+     onError: (error: AxiosError<ApiErrorResponse>) => {
       if(error.response?.status === 500 ||error.response?.data?.message.includes('ENOTFOUND') || error.message?.includes('ENOTFOUND')){
         toast.error("No internet connection.")
       }else{
@@ -82,37 +83,38 @@ const updateMutation = useMutation({
     }
   }
   return (
-    <table className="w-full border-collapse border">
+    <div className="border rounded-lg overflow-hidden bg-white shadow-sm">
+    <div className="overflow-x-auto">
+    <table className="w-full border-collapse border  min-w-[800px] sm:min-w-0">
       <thead>
         <tr className="bg-gray-100">
-          <th className="border px-4 py-2">Name</th>
-          <th className="border px-4 py-2">Role</th>
-          <th className="border px-4 py-2">Email</th>
-          <th className="border px-4 py-2">Phone</th>
-          <th className="border px-4 py-2">Status</th>
-          <th className="border px-4 py-2">Hire Date</th>
-          <th className="border px-4 py-2">Update</th>
-          <th className="border px-4 py-2">Delete</th>
+          <th className="border p-2 sm:p-3 text-left font-semibold text-xs sm:text-sm">Name</th>
+          <th className="border p-2 sm:p-3 text-left font-semibold text-xs sm:text-sm">Role</th>
+          <th className="border p-2 sm:p-3 text-left font-semibold text-xs sm:text-sm hidden md:table-cell">Email</th>
+          <th className="border p-2 sm:p-3 text-left font-semibold text-xs sm:text-sm hidden md:table-cell">Phone</th>
+          <th className="border p-2 sm:p-3 text-left font-semibold text-xs sm:text-sm hidden md:table-cell">Status</th>
+          <th className="border p-2 sm:p-3 text-left font-semibold text-xs sm:text-sm">Hire Date</th>
+          <th className="border p-2 sm:p-3 text-left font-semibold text-xs sm:text-sm">Actions</th>
         </tr>
       </thead>
        <tbody>
           {workers.map((w, i) => (
-            <tr key={i}>
-              <td className="border px-4 py-2">
+            <tr key={i}  className="hover:bg-gray-50 even:bg-gray-50/50">
+              <td className="border p-2 sm:p-3">
                 <input
                   value={editingWorker?._id === w._id ? editingWorker.name : w.name}
                   onChange={(e) => editingWorker?._id === w._id && 
                     setEditingWorker({ ...editingWorker, name: e.target.value })}
-                  className="w-full border-none bg-transparent"
+                  className="w-full px-2 py-1 border rounded text-xs sm:text-sm"
                   readOnly={editingWorker?._id !== w._id}
                 />
               </td>
-              <td className="border px-4 py-2">
+              <td className="border p-2 sm:p-3">
                 <select
                   value={editingWorker?._id === w._id ? editingWorker.role : w.role}
                   onChange={(e) => editingWorker?._id === w._id && 
                     setEditingWorker({ ...editingWorker, role: e.target.value })}
-                  className="w-full border-none bg-transparent"
+                  className="w-full px-2 py-1 border rounded text-xs sm:text-sm"
                   disabled={editingWorker?._id !== w._id}
                 >
                   <option value="admin">admin</option>
@@ -121,57 +123,66 @@ const updateMutation = useMutation({
                   <option value="warper">warper</option>
                 </select>
               </td>
-              <td className="border px-4 py-2">
+              <td className="border p-2 sm:p-3 hidden md:table-cell">
                 <input
                   value={editingWorker?._id === w._id ? editingWorker.email : w.email}
                   onChange={(e) => editingWorker?._id === w._id && 
                     setEditingWorker({ ...editingWorker, email: e.target.value })}
-                  className="w-full border-none bg-transparent"
+                  className="w-full px-2 py-1 border rounded text-xs sm:text-sm"
                   readOnly={editingWorker?._id !== w._id}
                 />
               </td>
-              <td className="border px-4 py-2">
+              <td className="border p-2 sm:p-3 hidden lg:table-cell">
                 <input
                   value={editingWorker?._id === w._id ? editingWorker.phone : w.phone}
                   onChange={(e) => editingWorker?._id === w._id && 
                     setEditingWorker({ ...editingWorker, phone: Number(e.target.value) })}
-                  className="w-full border-none bg-transparent"
+                  className="w-full px-2 py-1 border rounded text-xs sm:text-sm"
                   readOnly={editingWorker?._id !== w._id}
                 />
               </td>
-              <td className="border px-4 py-2">
+              <td className="border p-2 sm:p-3">
                 <select
                   value={editingWorker?._id === w._id ? editingWorker.status : w.status}
                   onChange={(e) => editingWorker?._id === w._id && 
                     setEditingWorker({ ...editingWorker, status: e.target.value })}
-                  className="w-full border-none bg-transparent"
+                  className="w-full px-2 py-1 border rounded text-xs sm:text-sm"
                   disabled={editingWorker?._id !== w._id}
                 >
                   <option value="active">active</option>
                   <option value="inactive">inactive</option>
                 </select>
               </td>
-              <td className="border px-4 py-2">
+              <td className="border sm:p-3 hidden xl:table-cell text-xs sm:text-sm">
                 {w.hireDate ? new Date(w.hireDate).toDateString() : 'Invalid date'}
               </td>
-              <td className="border px-4 py-2">
-                {editingWorker?._id === w._id ? (
-                  <Button variant="outline" onClick={handleSaveEdit}>
+              <td className="border p-2 sm:p-3">
+                <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-1 sm:space-y-0"> 
+                   {editingWorker?._id === w._id ? (
+                   <Button className="text-xs sm:text-sm" size="sm" variant="outline" onClick={handleSaveEdit}>
                     Save
-                  </Button>
-                ) : (
-                  <Button variant="outline" onClick={() => handleEditClick(w)}>
+                    </Button>
+                    ) : (
+                    <Button className="text-xs sm:text-sm" size="sm" variant="outline" onClick={() => handleEditClick(w)}>
                     Edit
-                  </Button>
-                )}
+                    </Button>
+                    )}
+                     <Button className="text-xs sm:text-sm" size="sm" variant="destructive" 
+                      onClick={()=> handleDelete(w._id)}
+                      disabled={deleteMutaution.isPending}
+                     > {deleteMutaution.isPending ? "Deleting..." : "Delete"}</Button>
+                 </div>
               </td>
-            <td><Button variant="destructive" 
-            onClick={()=> handleDelete(w._id)}
-            disabled={deleteMutaution.isPending}
-            > {deleteMutaution.isPending ? "Deleting..." : "Delete"}</Button></td>
           </tr>
         ))}
       </tbody>
     </table>
+    </div>
+       {workers.length === 0 && (
+        <div className="p-4 sm:p-8 text-center text-gray-500 text-sm sm:text-base">
+          No workers found.
+        </div>
+      )}
+    </div>
   )
 }

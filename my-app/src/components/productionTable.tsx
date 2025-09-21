@@ -5,9 +5,9 @@ import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { useQuery } from "@tanstack/react-query"
 import { getAllBeams, getAllFactories, getAllQualities, getLooms, getWorkers } from "@/http/api"
-import { Beam, BeamResponse, Factory, Loom, ProductionRecord, Quality, Worker } from "@/store"
+import { BeamResponse, Factory, Loom, ProductionRecord, Quality, Worker } from "@/store"
 import { CustomCombobox } from "./addProduction"
- interface FilterType {
+ export interface FilterType {
   date: string;
   loomId: string;
   factoryId: string;
@@ -15,7 +15,7 @@ import { CustomCombobox } from "./addProduction"
 }
 interface ProductionTableProps {
   filters: FilterType;
-  setFilters: (filter: any) => void;
+  setFilters: React.Dispatch<React.SetStateAction<FilterType>>;
   productionData: ProductionRecord[];
   isLoading: boolean;
   error?: Error | null;
@@ -54,7 +54,7 @@ const { data: beamsData } = useQuery({
 
   
   const handleFilterChange = (key: keyof typeof filters, value: string) => {
-    setFilters((prev: any) => ({ ...prev, [key]: value,
+    setFilters((prev: FilterType) => ({ ...prev, [key]: value,
       ...(key === 'factoryId' && { loomId: '' }) 
      }))
   }
@@ -103,20 +103,21 @@ beams.forEach(beam => {
   
 
   return (
-    <div className="space-y-4">
-      <div className="flex gap-4 items-end p-4 bg-gray-50 rounded-lg">
+    <div className="space-y-4 p-2">
+      <div className="bg-gray-50 rounded-lg p-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
         <div>
-          <Label htmlFor="date" className="pb-1">Date</Label>
+          <Label htmlFor="date" className="text-sm">Date</Label>
           <Input
             id="date"
             type="date"
             value={filters.date}
             onChange={(e) => handleFilterChange('date', e.target.value)}
+           className="w-full"
           />
         </div>
         
         <div>
-          <Label htmlFor="loomId" className="pb-1">Loom</Label>
+          <Label htmlFor="loomId" className="text-sm">Loom</Label>
            <CustomCombobox
              value={filters.loomId}
              onValueChange={(value) => handleFilterChange('loomId', value)}
@@ -132,7 +133,7 @@ beams.forEach(beam => {
         </div>
 
         <div>
-          <Label htmlFor="factoryId" className="pb-1">Factory</Label>
+          <Label htmlFor="factoryId" className="text-sm">Factory</Label>
           <CustomCombobox
           value={filters.factoryId}
           onValueChange={(value) => handleFilterChange('factoryId', value)}
@@ -144,7 +145,7 @@ beams.forEach(beam => {
         </div>
 
         <div>
-          <Label htmlFor="operatorId" className="pb-1">Operator</Label>
+          <Label htmlFor="operatorId" className="text-sm">Operator</Label>
            <CustomCombobox
                   value={filters.operatorId}
                   onValueChange={(value) => handleFilterChange('operatorId', value)}
@@ -154,63 +155,65 @@ beams.forEach(beam => {
                   onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, operator: open }))}
                 />
         </div>
-
+       
+       <div className="flex items-end">
         <Button onClick={clearFilters} variant="outline">
           Clear Filters
         </Button>
+       </div>
       </div>
 
-      <div className="border rounded-lg">
-        <table className="w-full border-collapse">
+      <div className="border rounded-lg overflow-auto">
+        <table className="w-full min-w-[800px]">
           <thead>
             <tr className="bg-gray-100">
-              <th className="border p-2">Date</th>
-              <th className="border p-2">Operator</th>
-              <th className="border p-2">Beam</th>
-              <th className="border p-2">Remaining Beam</th>
-              <th className="border p-2">Loom</th>
-              <th className="border p-2">Factory</th>
-              <th className="border p-2">Quality</th>
-              <th className="border p-2">Shift</th>
-              <th className="border p-2">Meters Produced</th>
-              <th className="border p-2">Notes</th>
+              <th className="p-2 text-left text-sm">Date</th>
+              <th className="p-2 text-left text-sm">Operator</th>
+              <th className="p-2 text-left text-sm">Beam</th>
+              <th className="p-2 text-left text-sm">Remaining Beam</th>
+              <th className="p-2 text-left text-sm">Loom</th>
+              <th className="p-2 text-left text-sm">Factory</th>
+              <th className="p-2 text-left text-sm">Quality</th>
+              <th className="p-2 text-left text-sm">Shift</th>
+              <th className="p-2 text-left text-sm">Meters Produced</th>
+              <th className="p-2 text-left text-sm">Notes</th>
             </tr>
           </thead>
           <tbody>
             {records.map((record) => {
                 const beamInfo = beamsMap.get(record.beamId); 
               return(
-              <tr key={record._id}>
-                <td className="border p-2">
+              <tr key={record._id} className="border-b">
+                <td className="p-2 text-sm">
                   {new Date(record.date).toLocaleDateString()}
                 </td>
-                <td className="border p-2">
+                <td className="p-2 text-sm">
                   {operatorsMap.get(record.operatorId) || record.operatorId}
                 </td>
-                <td className="border p-2">
+                <td className="p-2 text-sm">
                   {beamInfo ? beamInfo.number : record.beamId || 'No beam'}
                 </td>
-                <td className="border p-2">
+                <td className="p-2 text-sm">
                 {beamInfo ? `${beamInfo.remaining}` : '-'}
                 </td>
-                <td className="border p-2">
+                <td className="p-2 text-sm">
                   {LoomsMap.get(record.loomId) || record.loomId}
                 </td>
-                <td className="border p-2">
+                <td className="p-2 text-sm">
                   {factoryMap.get(record.factoryId) || record.factoryId}
                 </td>
-                <td className="border p-2">
+                <td className="p-2 text-sm">
                   {qualitiesMap.get(record.qualityId) || record.qualityId}
                 </td>
-                <td className="border p-2">{record.shift}</td>
-                <td className="border p-2">{record.meterProduced}</td>
-                <td className="border p-2">{record.notes}</td>
+                <td className="p-2 text-sm">{record.shift}</td>
+                <td className="p-2 text-sm">{record.meterProduced}</td>
+                <td className="p-2 text-sm max-w-[120px] truncate">{record.notes}</td>
               </tr>
             )
             })}
             {records.length === 0 && (
               <tr>
-                <td colSpan={10} className="border p-4 text-center text-gray-500">
+                <td colSpan={10} className="p-4 text-center text-gray-500">
                   No production records found
                 </td>
               </tr>
@@ -220,7 +223,7 @@ beams.forEach(beam => {
       </div>
 
       {records.length > 0 && (
-        <div className="bg-blue-50 p-4 rounded-lg">
+        <div className="bg-blue-50 p-3 rounded-lg text-sm">
           <h3 className="font-semibold">Summary</h3>
           <p>Total Records: {records.length}</p>
           <p>Total Meters: { Math.floor(records.reduce((sum, record) => sum + record.meterProduced, 0))}</p>
