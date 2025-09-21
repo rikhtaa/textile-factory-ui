@@ -5,12 +5,16 @@ import { createBeam, getAllBeams } from "@/http/api";
 import { Beam } from "@/store";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 export default function Page() {
     const {data: beamsData, refetch} = useQuery({
         queryKey: ['beam'],
         queryFn: getAllBeams,
     })
-    
+    interface ApiErrorResponse {
+  message: string;
+}
+  
     const {mutate: userMutate, isPending} = useMutation({
         mutationKey: ['beam'],
         mutationFn: createBeam, 
@@ -18,14 +22,14 @@ export default function Page() {
             refetch()
             toast.success("Beam has been created");
         },
-       onError: (error: any) => {
+       onError: (error: AxiosError<ApiErrorResponse>) => {
             if (error.response?.status === 409) {
             toast.error("Beam already exists");
             }else if (error.response?.status === 403) {
              toast.error("Only admin and manager can create Beam.");
             }else if(error.response?.data?.message.includes('E11000')){
                toast.error("This Beam Number is already registered. Please use a different Beam Number.");
-            }else if(error.response?.status >= 500){
+            }else if(error.response && error.response.status >= 500){
               toast.error("Internet issue please try again later");
             } else {
             toast.error(error.response?.data?.message || error.message || "An error occurred");

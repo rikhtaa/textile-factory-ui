@@ -1,12 +1,40 @@
 import { create } from "zustand"
 import { devtools, persist } from "zustand/middleware"
-
+export interface ApiErrorResponse {
+  message: string;
+}
+export interface BeamUsageReportParams {
+  start: string;
+  end?: string;
+  beamId?: string;
+  loomId?: string;
+}
 export interface Beam{
   _id?: string | undefined
   beamNumber: string
   totalMeters: number
   isClosed: boolean
 }
+export interface ProductionRecord {
+  _id: string;
+  beamId: string;
+  loomId: string;
+  operatorId: string;
+  meterProduced: number;
+  date: Date;
+  shift: string;
+  notes?: string;
+}
+export interface BeamUsageRecord {
+  _id: string;
+  beamNumber: string;
+  beamMeter: number;
+  totalProduced: number;
+  remainingBeamMeter: number;
+  records: ProductionRecord[];
+}
+
+export type BeamUsageResponse = BeamUsageRecord[];
 
 export interface BeamResponse{
   _id?: string | undefined
@@ -42,7 +70,7 @@ export interface BeamsReportResponse {
   loomId: string | null;
   totalMeters: number;
   count: number;
-  details?: { // ✅ Add this optional details array
+  details?: { 
     _id: string;
     beamNumber: string;
     totalMeters: number;
@@ -152,7 +180,17 @@ export interface Quality{
   _id?: string
   name: string
   pricePerMeter: number
+}
+export interface PriceHistoryEntry {
+  pricePerMeter: number;
+  effectiveFrom: Date;
+}
+export interface QualityResponse{
+  _id?: string
+  name: string
+  pricePerMeter: number
   effectiveFrom: Date
+  priceHistory: PriceHistoryEntry[];
 }
 
 export interface Loom {

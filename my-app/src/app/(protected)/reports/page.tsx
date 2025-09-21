@@ -1,5 +1,6 @@
 'use client'
 import { Operator15DayReport } from '@/components/15dayOperatorReportTable'
+import { BeamUsageReport } from '@/components/beamUsageReport'
 import { DailyQualityReport } from '@/components/dailyQualityReportTable'
 import { DailyLoomsReport } from '@/components/dailyReportsTable'
 import { OperatorPeriodReport } from '@/components/operatorPeriodReportTable'
@@ -17,6 +18,7 @@ export default function Page() {
             <Operator15DayReport/>
             <OperatorPeriodReport/>
             <PayrunReport/>
+            <BeamUsageReport/>
          </div>
           </div>
   )

@@ -1,4 +1,4 @@
-import { Beam, BulkProductionImport, CreateProduction, Loom, ProductionFilters, ProductionRecord, Quality, Worker, WorkerCredentails } from "@/store";
+import { Beam, BeamUsageReportParams, BulkProductionImport, CreateProduction, Loom, ProductionFilters, ProductionRecord, Quality, Worker, WorkerCredentails } from "@/store";
 import { api } from "./client";
 
 export const login = (credentials: WorkerCredentails) => api.post('/auth/login', credentials)
@@ -8,6 +8,8 @@ export const deleteWorker = (id: string)=> api.delete(`/workers/${id}`)
 export const updateWorker = (id: string, worker: Partial<Worker>)=> api.put(`/workers/${id}`,worker)
 export const createQuality = (credentials: Quality) => api.post('/qualities', credentials)
 export const getAllQualities = ()=> api.get('/qualities')
+export const deleteQuality = (id: string)=> api.delete(`/qualities/${id}`)
+export const updateQuality = (id: string, quality: Partial<Quality>)=> api.put(`/qualities/${id}`, quality)
 export const createLoom = (credentials: Loom) => api.post('/looms', credentials)
 export const getLooms = () => api.get('/looms')
 export const deleteLooms = (id: string) => api.delete(`/looms/${id}`)
@@ -48,3 +50,16 @@ export const createBeam = (beam: Beam)=> api.post('/beams', beam)
 export const getAllBeams = ()=> api.get('/beams')
 export const deleteBeam = (id: string)=>api.delete(`/beams/${id}`)
 export const updateBeam = (id: string, beam: Partial<Beam>)=> api.put(`/beams/${id}`, beam)
+export const getBeamUsageReport = (
+  start: string, 
+  end?: string, 
+  beamId?: string, 
+  loomId?: string
+) => {
+  const params: BeamUsageReportParams = { start };
+    if (end && end.trim() !== '') params.end = end;
+  if (beamId && beamId.trim() !== '' && beamId !== 'unknown') params.beamId = beamId;
+  if (loomId && loomId.trim() !== '' && loomId !== 'unknown') params.loomId = loomId;
+  
+  return api.get('/reports/beam-usage', { params });
+};
