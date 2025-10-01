@@ -168,12 +168,11 @@ export interface DailyLoomsResponse {
 export interface Worker {
   _id: string;
   name: string;
-  phone: number;
-  role: string;
-  email: string;
+  phone: string;
+  cnic: string;
+  address: string
   status: string;
-  hireDate: Date;
-  password: string;
+  hireDate: string;
 }
 
 export interface Quality{

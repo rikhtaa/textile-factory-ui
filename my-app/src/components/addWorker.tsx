@@ -1,25 +1,39 @@
-"use client"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+"use client";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
-import { ChevronDownIcon } from "lucide-react"
-import { useState } from "react"
-import { Worker } from "@/store"
-import { Toaster } from "./ui/sonner"
-import { toast } from "sonner"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { ChevronDownIcon } from "lucide-react";
+import { useState } from "react";
+import { Toaster } from "./ui/sonner";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
 
+interface WorkerForm {
+  _id: string
+  name: string;
+  phone: string;
+  cnic: string;
+  address: string;
+  hireDate: string; 
+  status: string;
+}
 
 interface AddWorkerProps extends React.ComponentProps<"div"> {
-  onFormSubmit?: (formData: Worker) => void;
-  isPending: boolean | undefined
+  onFormSubmit?: (formData: WorkerForm) => void;
+  isPending: boolean | undefined;
 }
 
 export function AddWorker({
@@ -27,46 +41,21 @@ export function AddWorker({
   onFormSubmit,
   isPending,
   ...props
-}: AddWorkerProps){
-  const [formData, setFormData] = useState<Worker>({
-    _id: '',
-    name: '',
-    phone: 0,
-    role: '',
-    email: '',
-    status: '',
-    hireDate: new Date(),
-    password: '',
-  });
+}: AddWorkerProps) {
+  const { register, handleSubmit, reset } = useForm<WorkerForm>();
+  const [status, setStatus] = useState(""); 
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-     if (
-    !formData.email ||
-    !formData.hireDate ||
-    !formData.name ||
-    !formData.password ||
-    !formData.phone ||
-    !formData.role ||
-    !formData.status 
-   ){
-    toast.error("Please fill in all required fields.");
-    return;
-  }
-    if (onFormSubmit) {
-      const { _id, ...workerData } = formData;
-       onFormSubmit(workerData as Worker);
+  const submitHandler = (data: WorkerForm) => {
+    if (!status) {
+      toast.error("Please select a status.");
+      return;
     }
-    setFormData({
-      _id: '',
-      name: '',
-      phone: 0,
-      role: '',
-      email: '',
-      status: '',
-      hireDate: new Date(),
-      password: '',
-    });
+
+    const workerData = { ...data, status };
+    onFormSubmit?.(workerData);
+
+    reset();
+    setStatus("");
   };
 
   return (
@@ -77,152 +66,52 @@ export function AddWorker({
           <Toaster />
         </CardHeader>
         <CardContent className="px-4 sm:px-6">
-          <form onSubmit={handleSubmit} className="w-full">
+          <form onSubmit={handleSubmit(submitHandler)} className="w-full">
             <div className="flex flex-col gap-4 sm:gap-6 w-full md:w-[80%] lg:w-[60%] xl:w-[50%]">
               <div className="grid gap-2 sm:gap-3">
-                <Label htmlFor="name" className="text-sm sm:text-base">Name</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="John Doe"
-                  required
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                   className="text-sm sm:text-base" 
-                />
-              </div>
-              <div className="grid gap-2 sm:gap-3">
-                <Label className="text-sm sm:text-base">Role</Label>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-between border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                    >
-                      {formData.role || "Select role"}
-                      <ChevronDownIcon className="h-4 w-4 opacity-50" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem 
-                      onSelect={() => setFormData({ ...formData, role: "admin" })}
-                    >
-                      admin
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onSelect={() => setFormData({ ...formData, role: "manager" })}
-                    >
-                      manager
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onSelect={() => setFormData({ ...formData, role: "operator" })}
-                    >
-                      operator
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onSelect={() => setFormData({ ...formData, role: "warper" })}
-                    >
-                      warper
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-              
-              <div className="grid gap-2 sm:gap-3">
-                <Label htmlFor="phone">Phone</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+921347265271"
-                  required
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: Number(e.target.value) })
-                  }
-                  onWheel={(e) => e.currentTarget.blur()}
-                  className="text-sm sm:text-base"
-                />
+                <Label htmlFor="name">Name</Label>
+                <Input id="name" placeholder="John Doe" required {...register("name")} />
               </div>
 
               <div className="grid gap-2 sm:gap-3">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="john@gmail.com"
-                  required
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  className="text-sm sm:text-base"
-                />
+                <Label htmlFor="address">Address</Label>
+                <Input id="address" placeholder="Houston, TX" required {...register("address")} />
+              </div>
+
+              <div className="grid gap-2 sm:gap-3">
+                <Label htmlFor="phone">Phone</Label>
+                <Input id="phone" type="text" placeholder="+921347265271" required {...register("phone")} />
+              </div>
+
+              <div className="grid gap-2 sm:gap-3">
+                <Label htmlFor="cnic">CNIC</Label>
+                <Input id="cnic" type="text" placeholder="456456666656" required {...register("cnic")} />
               </div>
 
               <div className="grid gap-2 sm:gap-3">
                 <Label htmlFor="hireDate">Hire Date</Label>
-                <Input
-                  id="hireDate"
-                  type="date"
-                  placeholder="11-22-2024"
-                  required
-                  value={formData.hireDate.toISOString().split('T')[0]}
-                  onChange={(e) =>
-                    setFormData({ ...formData, hireDate: new Date(e.target.value) })
-                  }
-                  className="text-sm sm:text-base"
-                />
+                <Input id="hireDate" type="date" required {...register("hireDate")} />
               </div>
 
               <div className="grid gap-2 sm:gap-3">
                 <Label>Status</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-between border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                    >
-                      {formData.status || 'Status'}
+                    <Button variant="outline" className="w-full justify-between">
+                      {status || "Status"}
                       <ChevronDownIcon className="h-4 w-4 opacity-50" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent> 
-                    <DropdownMenuItem onSelect={() => setFormData({...formData, status: "active"})}>
-                      active
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => setFormData({...formData, status: "inactive"})}>
-                      inactive
-                    </DropdownMenuItem>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onSelect={() => setStatus("active")}>active</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => setStatus("inactive")}>inactive</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div> 
-
-              <div className="grid gap-2 sm:gap-3">
-                <div className="flex items-center">
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
-                <Label htmlFor="password">Password</Label>
-                <Input 
-                  id="password" 
-                  type="password" 
-                  required 
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  className="text-sm sm:text-base"
-                />
               </div>
-              <div className="flex flex-col gap-3  sm:gap-3">
-                <Button type="submit" className="w-full  text-sm sm:text-base" disabled={isPending}>
-                  {isPending ? 'Creating...' : 'Create'}
+
+              <div className="flex flex-col gap-3">
+                <Button type="submit" className="w-full" disabled={isPending}>
+                  {isPending ? "Creating..." : "Create"}
                 </Button>
               </div>
             </div>
@@ -230,5 +119,5 @@ export function AddWorker({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

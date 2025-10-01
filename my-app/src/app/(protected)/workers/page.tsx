@@ -18,7 +18,7 @@ const {data: workersData, refetch} = useQuery({
         mutationFn: creatWorker, 
         onSuccess: ()=>{
         refetch();
-            toast.success("Worker has been created");
+          toast.success("Worker has been created");
         },
        onError: (error: AxiosError<ApiErrorResponse>) => {
             if (error.response?.status === 409) {
@@ -26,9 +26,10 @@ const {data: workersData, refetch} = useQuery({
             }else if (error.response?.status === 403) {
              toast.error("Only admin and manager can create Worker.");
             }else if(error.response?.data?.message.includes('E11000')){
-               toast.error("This email is already registered. Please use a different email.");
-            }else if(error.response && error.response.status >= 500){
-              toast.error("Internet issue please try again later");
+               toast.error("This CNIC is already registered. Please use a different CNIC.");
+            }else if (error.code === 'NETWORK_ERROR' || !error.response) {
+              toast.error("Network issue - please check your connection");
+              return;
             } else {
             toast.error(error.response?.data?.message || error.message || "An error occurred");
             }

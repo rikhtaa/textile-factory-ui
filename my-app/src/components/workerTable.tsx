@@ -89,8 +89,8 @@ const updateMutation = useMutation({
       <thead>
         <tr className="bg-gray-100">
           <th className="border p-2 sm:p-3 text-left font-semibold text-xs sm:text-sm">Name</th>
-          <th className="border p-2 sm:p-3 text-left font-semibold text-xs sm:text-sm">Role</th>
-          <th className="border p-2 sm:p-3 text-left font-semibold text-xs sm:text-sm hidden md:table-cell">Email</th>
+          <th className="border p-2 sm:p-3 text-left font-semibold text-xs sm:text-sm hidden md:table-cell">CNIC</th>
+          <th className="border p-2 sm:p-3 text-left font-semibold text-xs sm:text-sm hidden md:table-cell">Address</th>
           <th className="border p-2 sm:p-3 text-left font-semibold text-xs sm:text-sm hidden md:table-cell">Phone</th>
           <th className="border p-2 sm:p-3 text-left font-semibold text-xs sm:text-sm hidden md:table-cell">Status</th>
           <th className="border p-2 sm:p-3 text-left font-semibold text-xs sm:text-sm">Hire Date</th>
@@ -109,34 +109,33 @@ const updateMutation = useMutation({
                   readOnly={editingWorker?._id !== w._id}
                 />
               </td>
-              <td className="border p-2 sm:p-3">
-                <select
-                  value={editingWorker?._id === w._id ? editingWorker.role : w.role}
-                  onChange={(e) => editingWorker?._id === w._id && 
-                    setEditingWorker({ ...editingWorker, role: e.target.value })}
-                  className="w-full px-2 py-1 border rounded text-xs sm:text-sm"
-                  disabled={editingWorker?._id !== w._id}
-                >
-                  <option value="admin">admin</option>
-                  <option value="manager">manager</option>
-                  <option value="operator">operator</option>
-                  <option value="warper">warper</option>
-                </select>
-              </td>
               <td className="border p-2 sm:p-3 hidden md:table-cell">
                 <input
-                  value={editingWorker?._id === w._id ? editingWorker.email : w.email}
+                  type="number"
+                  value={editingWorker?._id === w._id ? editingWorker.cnic : w.cnic}
+                  onWheel={(e) => e.currentTarget.blur()}
                   onChange={(e) => editingWorker?._id === w._id && 
-                    setEditingWorker({ ...editingWorker, email: e.target.value })}
+                    setEditingWorker({ ...editingWorker, cnic: e.target.value})}
+                    className="w-full px-2 py-1 border rounded text-xs sm:text-sm"
+                  readOnly={editingWorker?._id !== w._id}
+                />
+              </td>
+               <td className="border p-2 sm:p-3">
+                <input
+                  value={editingWorker?._id === w._id ? editingWorker.address : w.address}
+                  onChange={(e) => editingWorker?._id === w._id && 
+                    setEditingWorker({ ...editingWorker, address: e.target.value })}
                   className="w-full px-2 py-1 border rounded text-xs sm:text-sm"
                   readOnly={editingWorker?._id !== w._id}
                 />
               </td>
               <td className="border p-2 sm:p-3 hidden lg:table-cell">
                 <input
+                  type="number"
+                  onWheel={(e) => e.currentTarget.blur()}
                   value={editingWorker?._id === w._id ? editingWorker.phone : w.phone}
                   onChange={(e) => editingWorker?._id === w._id && 
-                    setEditingWorker({ ...editingWorker, phone: Number(e.target.value) })}
+                    setEditingWorker({ ...editingWorker, phone: e.target.value })}
                   className="w-full px-2 py-1 border rounded text-xs sm:text-sm"
                   readOnly={editingWorker?._id !== w._id}
                 />
@@ -154,7 +153,7 @@ const updateMutation = useMutation({
                 </select>
               </td>
               <td className="border sm:p-3 hidden xl:table-cell text-xs sm:text-sm">
-                {w.hireDate ? new Date(w.hireDate).toDateString() : 'Invalid date'}
+                {w.hireDate ? w.hireDate : 'Invalid date'}
               </td>
               <td className="border p-2 sm:p-3">
                 <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-1 sm:space-y-0"> 
