@@ -32,7 +32,7 @@ export default function page(){
   })  
   
   const {mutate: userMutate, isPending}=useMutation({
-   mutationKey: ['loomMagament'],
+   mutationKey: ['loommanagement'],
    mutationFn: createLoomManagement,
    onSuccess: ()=>{
     refetch()
