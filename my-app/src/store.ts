@@ -208,11 +208,20 @@ export interface Loom {
   status: string;
 }
 export interface LoomManagement {
+  _id: string
   loom: string
   beam: string
   quality: string;
   beamDate: string;
 }
+
+export interface DataTypes {
+  loomsManageData: LoomManagement[]
+  beamsData: Beam[] 
+  qualitiesData: Quality[]
+  loomsData: Loom[]
+}
+
 
 export interface Factory{
  _id: string
