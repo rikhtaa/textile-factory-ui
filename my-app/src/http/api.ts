@@ -1,4 +1,4 @@
-import { Beam, BeamUsageReportParams, BulkProductionImport, CreateProduction, Loom, ProductionFilters, ProductionRecord, Quality, Worker, WorkerCredentails } from "@/store";
+import { Beam, BeamUsageReportParams, BulkProductionImport, CreateProduction, Loom, LoomManagement, ProductionFilters, ProductionRecord, Quality, Worker, WorkerCredentails } from "@/store";
 import { api } from "./client";
 
 export const login = (credentials: WorkerCredentails) => api.post('/auth/login', credentials)
@@ -63,3 +63,4 @@ export const getBeamUsageReport = (
   
   return api.get('/reports/beam-usage', { params });
 };
+export const createLoomManagement= (loomManagement: LoomManagement)=> api.post('/loomManagement', loomManagement)

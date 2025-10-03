@@ -21,6 +21,7 @@ export interface ProductionRecord {
   loomId: string;
   operatorId: string;
   meterProduced: number;
+  qualityId: string
   date: Date;
   shift: string;
   notes?: string;
@@ -45,12 +46,10 @@ export interface BeamResponse{
   remainingMeters: number
 }
 export interface CreateProduction {
-  beamId: string
   remainingBeam?: string
   operatorId: string;
   loomId: string;
   factoryId: string
-  qualityId: string;
   date: Date; 
   shift: string;
   meterProduced: number
@@ -192,13 +191,27 @@ export interface QualityResponse{
   priceHistory: PriceHistoryEntry[];
 }
 
+export interface CreateLoom{
+  _id: string
+  factoryId: string
+  loomNumber: string;
+  status: string;
+  beam?: string
+  beamDate?: Date;
+  quality?: string;
+}
+
 export interface Loom {
   _id: string;
   factoryId: string
   loomNumber: string;
-  section?: string;
   status: string;
-  beamInfo?: string;
+}
+export interface LoomManagement {
+  loom: string
+  beam: string
+  quality: string;
+  beamDate: string;
 }
 
 export interface Factory{
