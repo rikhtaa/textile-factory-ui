@@ -34,18 +34,14 @@ export function AddLoom({
     _id: '',
     factoryId: '',
     loomNumber : '',
-    section : '',
     status: '',
-    beamInfo : '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
      if (
-    !formData.beamInfo ||
     !formData.factoryId ||
     !formData.loomNumber ||
-    !formData.section ||
     !formData.status
   ) {
     toast.error("Please fill in all required fields.");
@@ -60,9 +56,7 @@ export function AddLoom({
        _id: '',
       factoryId: '',
     loomNumber : '',
-    section : '',
     status: '',
-    beamInfo : '',
     });
   };
 
@@ -113,20 +107,6 @@ export function AddLoom({
 </select>
               </div>
 
-              <div className="grid gap-2 sm:gap-3">
-                <Label htmlFor="section">Section</Label>
-                <Input
-                  id="section"
-                  type="text"
-                  placeholder="Weaving Section"
-                  value={formData.section}
-                  onChange={(e) =>
-                    setFormData({ ...formData, section: e.target.value })
-                  }
-                  className="text-sm sm:text-base"
-                />
-              </div>
-
                <div className="grid gap-2 sm:gap-3">
                 <Label className="text-sm sm:text-base">Status</Label>
                 <DropdownMenu>
@@ -150,21 +130,6 @@ export function AddLoom({
                 </DropdownMenu>
               </div> 
 
-              <div className="grid gap-2 sm:gap-3">
-                <Label htmlFor="email">Beam Info</Label>
-                <Input
-                  id="beamInfo"
-                  type="beamInfo"
-                  placeholder="Beam details or specifications"
-                  required
-                  value={formData.beamInfo}
-                  onChange={(e) =>
-                    setFormData({ ...formData, beamInfo: e.target.value })
-                  }
-                   className="text-sm sm:text-base" 
-                />
-              </div>
-             
               <div className="flex flex-col gap-2 sm:gap-3">
                 <Button type="submit" className="w-full text-sm sm:text-base" size="sm" disabled={isPending}>
                   {isPending ? 'Creating...' : 'Create'}

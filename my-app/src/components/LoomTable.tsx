@@ -90,9 +90,7 @@ const updateMutation = useMutation({
         <tr className="bg-gray-100">
           <th className="sm:p-3 text-left font-semibold text-xs sm:text-sm">Loom Number</th>
           <th className="sm:p-3 text-left font-semibold text-xs sm:text-sm">Factory</th>
-          <th className="sm:p-3 text-left font-semibold text-xs sm:text-sm">Section</th>
           <th className="sm:p-3 text-left font-semibold text-xs sm:text-sm">Status</th>
-          <th className="sm:p-3 text-left font-semibold text-xs sm:text-sm">Beam Info</th>
           <th className="sm:p-3 text-left font-semibold text-xs sm:text-sm">Actions</th>
         </tr>
       </thead>
@@ -128,15 +126,7 @@ const updateMutation = useMutation({
               )}
             </td>
         
-              <td className="border px-4 py-2">
-                <input
-                  value={editingLoom?._id === w._id ? editingLoom.section : w.section}
-                  onChange={(e) => editingLoom?._id === w._id && 
-                  setEditingLoom({ ...editingLoom, section: e.target.value })}
-                  className="w-full px-2 py-1 border rounded text-xs sm:text-sm"
-                  readOnly={editingLoom?._id !== w._id}
-                />
-              </td>
+             
 
               <td className="border p-2 sm:p-3">
                 <select
@@ -151,15 +141,7 @@ const updateMutation = useMutation({
                 </select>
               </td>
 
-              <td className="border p-2 sm:p-3">
-                <input
-                  value={editingLoom?._id === w._id ? editingLoom.beamInfo : w.beamInfo}
-                  onChange={(e) => editingLoom?._id === w._id && 
-                    setEditingLoom({ ...editingLoom, beamInfo: e.target.value})}
-                  className="w-full px-2 py-1 border rounded text-xs sm:text-sm"
-                  readOnly={editingLoom?._id !== w._id}
-                />
-              </td>
+             
               
              
               <td className="border p-2 sm:p-3">
