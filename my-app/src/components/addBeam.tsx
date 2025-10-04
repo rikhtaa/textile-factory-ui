@@ -30,7 +30,7 @@ export function AddBeam({
 }: AddBeamProps){
   const [formData, setFormData] = useState<Beam>({
     beamNumber: '',
-    totalMeters: 0,
+    totalMeters: undefined as unknown as number,
     isClosed: false,
   });
 
@@ -49,7 +49,7 @@ export function AddBeam({
     }
     setFormData({
       beamNumber: '',
-      totalMeters: 0,
+      totalMeters: undefined as unknown as number,
       isClosed: false,
     });
   };

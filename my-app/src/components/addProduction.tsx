@@ -92,7 +92,7 @@ export function AddProduction({
     loomManagement: '',
     date: new Date(),
     shift: '',
-    meterProduced: Number(0),
+    meterProduced: undefined as unknown as number,
     notes: ''
   });
 
@@ -141,13 +141,11 @@ export function AddProduction({
       loomManagement: '',
       date: new Date(),
       shift: '',
-      meterProduced: Number(0),
+      meterProduced: Number( ),
       notes: ''
     });
 
   };
-  console.log("Submitting data:", formData)
-
   return (
     <div className={cn("flex flex-col gap-6 sm:gap-6", className)} {...props}>
       <Card className="w-full">
@@ -160,7 +158,6 @@ export function AddProduction({
           <form onSubmit={handleSubmit} className="w-full">
             <div className="flex flex-col gap-4 sm:gap-6 w-full md:w-[80%] lg:w-[60%] xl:w-[50%]">
               
-              {/* Factory */}
               <div className="grid gap-3">
                 <Label htmlFor="factory">Factory</Label>
                 <CustomCombobox
@@ -173,7 +170,6 @@ export function AddProduction({
                 />
               </div>
 
-              {/* Operator */}
               <div className="grid gap-3">
                 <Label htmlFor="operatorId">Operator</Label>
                 <CustomCombobox
@@ -186,7 +182,6 @@ export function AddProduction({
                 />
               </div>
 
-              {/* Loom Management (one combo but sets 3 fields) */}
               <div className="grid gap-3">
                 <Label htmlFor="loomManagement">Loom Management</Label>
                 <CustomCombobox
@@ -213,7 +208,6 @@ export function AddProduction({
                 />
               </div>
 
-              {/* Date */}
               <div className="grid gap-3">
                 <Label htmlFor="date">Date</Label>
                 <Input
@@ -224,7 +218,6 @@ export function AddProduction({
                 />
               </div>
 
-              {/* Shift */}
               <div className="grid gap-3">
                 <Label htmlFor="shift">Shift</Label>
                 <CustomCombobox
@@ -241,7 +234,6 @@ export function AddProduction({
                 />
               </div>
 
-              {/* Meter Produced */}
               <div className="grid gap-3">
                 <Label htmlFor="meterProduced">Meter Produced</Label>
                 <Input
@@ -253,7 +245,6 @@ export function AddProduction({
                 />
               </div>
 
-              {/* Notes */}
               <div className="grid gap-3">
                 <Label htmlFor="notes">Notes</Label>
                 <textarea

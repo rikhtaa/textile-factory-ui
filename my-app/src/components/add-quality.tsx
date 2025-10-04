@@ -29,7 +29,7 @@ export function AddQuality({
   const [formData, setFormData] = useState<Quality>({
     _id: '',
     name: '',
-    pricePerMeter: 0,
+    pricePerMeter: undefined as unknown as number,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -48,7 +48,7 @@ export function AddQuality({
     setFormData({
       _id: '',
       name: '',
-      pricePerMeter: 0.,
+      pricePerMeter: undefined as unknown as number,
     });
   };
 
