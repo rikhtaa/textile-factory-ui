@@ -18,7 +18,7 @@ export interface Beam{
 export interface ProductionRecord {
   _id: string;
   beamId: string;
-  loomId: string;
+  loomManagement: string;
   operatorId: string;
   meterProduced: number;
   qualityId: string
@@ -46,9 +46,12 @@ export interface BeamResponse{
   remainingMeters: number
 }
 export interface CreateProduction {
+  beamId: string
+  loomId: string
+  qualityId: string
   remainingBeam?: string
   operatorId: string;
-  loomId: string;
+  loomManagement: string;
   factoryId: string
   date: Date; 
   shift: string;

@@ -64,3 +64,5 @@ export const getBeamUsageReport = (
   return api.get('/reports/beam-usage', { params });
 };
 export const createLoomManagement= (loomManagement: LoomManagement)=> api.post('/loomManagement', loomManagement)
+export const getAllLoomManage = ()=>api.get('/loomManagement')
+export const deleteLoomManage = (_id: string)=> api.delete(`/loomManagement/${_id}`)
