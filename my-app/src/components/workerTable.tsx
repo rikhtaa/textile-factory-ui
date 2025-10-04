@@ -14,7 +14,6 @@ export function WorkersTable({ workers }: { workers: Worker[] }) {
     mutationFn: deleteWorker,
     onMutate: async (workerId) => {
      await queryClient.cancelQueries({ queryKey: ['workers'] })
-      
       const previousWorkers = queryClient.getQueryData(['workers']) as { data: Worker[] }
       queryClient.setQueryData(['workers'], (old: { data: Worker[] }) => ({
         data: old.data.filter(worker => worker._id !== workerId)
@@ -40,7 +39,7 @@ export function WorkersTable({ workers }: { workers: Worker[] }) {
 
 const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<Worker> }) => 
-      updateWorker(id, data),
+    updateWorker(id, data),
     onMutate: async ({ id, data }) => {
       await queryClient.cancelQueries({ queryKey: ['workers'] })
       const previousWorkers = queryClient.getQueryData(['workers']) as { data: Worker[] }
@@ -66,7 +65,6 @@ const updateMutation = useMutation({
   })
 
   const handleDelete = (workerId: string)=>{
-    console.log('Deleting worker with ID:', workerId) 
     deleteMutaution.mutate(workerId)
   }
    const handleUpdate = (id: string, data: Partial<Worker>) => {
@@ -153,7 +151,11 @@ const updateMutation = useMutation({
                 </select>
               </td>
               <td className="border sm:p-3 hidden xl:table-cell text-xs sm:text-sm">
-                {w.hireDate ? w.hireDate : 'Invalid date'}
+                {new Date(w.hireDate).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                   day: "numeric",
+                  })}
               </td>
               <td className="border p-2 sm:p-3">
                 <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-1 sm:space-y-0"> 
