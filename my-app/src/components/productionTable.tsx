@@ -4,7 +4,7 @@ import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { useQuery } from "@tanstack/react-query"
-import { getAllBeams, getAllFactories, getAllQualities, getLooms, getWorkers } from "@/http/api"
+import { getAllFactories, getAllQualities, getLooms, getWorkers } from "@/http/api"
 import { BeamResponse, Factory, Loom, ProductionRecord, Quality, Worker } from "@/store"
 import { CustomCombobox } from "./addProduction"
  export interface FilterType {
@@ -12,15 +12,18 @@ import { CustomCombobox } from "./addProduction"
   loomId: string;
   factoryId: string;
   operatorId: string;
+  beamId: string
+  qualityId: string
 }
 interface ProductionTableProps {
+  beamsData: BeamResponse[]
   filters: FilterType;
   setFilters: React.Dispatch<React.SetStateAction<FilterType>>;
   productionData: ProductionRecord[];
   isLoading: boolean;
   error?: Error | null;
 }
-export function ProductionTable({filters, setFilters, productionData, isLoading,   error = null}: ProductionTableProps ) {
+export function ProductionTable({beamsData, filters, setFilters, productionData, isLoading,   error = null}: ProductionTableProps ) {
     const [openDropdowns, setOpenDropdowns] = useState({
       beam: false,
       operator: false,
@@ -46,13 +49,7 @@ const { data: operatorsData } = useQuery({
       queryKey: ['workers'],
       queryFn: getWorkers
   })
-const { data: beamsData } = useQuery({
-      queryKey: ['beam'],
-      queryFn: getAllBeams
-})
 
-
-  
   const handleFilterChange = (key: keyof typeof filters, value: string) => {
     setFilters((prev: FilterType) => ({ ...prev, [key]: value,
       ...(key === 'factoryId' && { loomId: '' }) 
@@ -60,7 +57,7 @@ const { data: beamsData } = useQuery({
   }
 
   const clearFilters = () => {
-    setFilters({ date: "", loomId: "", factoryId: "", operatorId: "",
+    setFilters({ date: "", loomId: "", factoryId: "", operatorId: "", qualityId: "", beamId: "",
  })
   }
 
@@ -72,7 +69,7 @@ const { data: beamsData } = useQuery({
   const allLooms: Loom[] = loomsData?.data || []
   const qualities: Quality[] = qualitiesData?.data || []
   const operators: Worker[] = operatorsData?.data || []
-  const beams: BeamResponse[] = beamsData?.data || []
+  const beams: BeamResponse[] = beamsData || []
 
     const factoryMap = new Map()
     factories.forEach(factory => {
@@ -123,7 +120,7 @@ beams.forEach(beam => {
              onValueChange={(value) => handleFilterChange('loomId', value)}
               items={allLooms.map(loom => ({ 
                 value: loom._id || 'unknown', 
-                label: `${loom.loomNumber}${loom.section ? ` - ${loom.section}` : ''}`
+                label: loom.loomNumber
               }))}
               placeholder="Select loom"
               open={openDropdowns.loom}
@@ -153,6 +150,30 @@ beams.forEach(beam => {
                   placeholder="Select operator"
                   open={openDropdowns.operator}
                   onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, operator: open }))}
+                />
+        </div>
+
+        <div>
+          <Label htmlFor="beamId" className="text-sm">Beam</Label>
+           <CustomCombobox
+                  value={filters.beamId}
+                  onValueChange={(value) => handleFilterChange('beamId', value)}
+                  items={beams.map(b => ({ value: b._id || 'unknown', label: b.beamNumber }))}
+                  placeholder="Select beam"
+                  open={openDropdowns.beam}
+                  onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, beam: open }))}
+                />
+        </div>
+
+        <div>
+          <Label htmlFor="qualityId" className="text-sm">Quality</Label>
+           <CustomCombobox
+                  value={filters.qualityId}
+                  onValueChange={(value) => handleFilterChange('qualityId', value)}
+                  items={qualities.map(q => ({ value: q._id || 'unknown', label: q.name }))}
+                  placeholder="Select quality"
+                  open={openDropdowns.quality}
+                  onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, quality: open }))}
                 />
         </div>
        
