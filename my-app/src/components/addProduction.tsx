@@ -1,32 +1,16 @@
 "use client"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useEffect, useState, useMemo } from "react"
-import { Beam, CreateProduction, Factory, Loom, Quality, Worker } from "@/store"
+import { useState } from "react"
+import { Beam, CreateProduction, Factory, Loom, LoomManagement, Quality, Worker } from "@/store"
 import { useQuery } from "@tanstack/react-query"
-import { getAllBeams, getAllFactories, getAllQualities, getLooms, getWorkers } from "@/http/api"
-import { CheckIcon, ChevronsUpDownIcon } from "lucide-react"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+import { getAllBeams, getAllFactories, getAllLoomManage, getAllQualities, getLooms, getWorkers } from "@/http/api"
+import { ChevronsUpDownIcon } from "lucide-react"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Toaster } from "./ui/sonner"
 import { toast } from "sonner"
 
@@ -34,18 +18,19 @@ interface AddProductionProps extends React.ComponentProps<"div"> {
   onFormSubmit?: (formData: CreateProduction) => void;
   onSucess: boolean | undefined
   isPending: boolean | undefined
+  beamsData: Beam[]
 }
 
-export const CustomCombobox = ({ 
-  value, 
-  onValueChange, 
-  items, 
-  placeholder, 
+export const CustomCombobox = ({
+  value,
+  onValueChange,
+  items,
+  placeholder,
   open,
   onOpenChange
 }: {
   value: string;
-  onValueChange: (value: string) => void;
+  onValueChange: (value: string) => void
   items: { value: string; label: string }[];
   placeholder: string;
   open: boolean;
@@ -71,7 +56,7 @@ export const CustomCombobox = ({
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup>
-            {items.map((item) => (
+            {items?.map((item) => (
               <CommandItem
                 key={item.value}
                 value={item.value}
@@ -80,12 +65,6 @@ export const CustomCombobox = ({
                   onOpenChange(false)
                 }}
               >
-                <CheckIcon
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value === item.value ? "opacity-100" : "opacity-0"
-                  )}
-                />
                 {item.label}
               </CommandItem>
             ))}
@@ -94,22 +73,23 @@ export const CustomCombobox = ({
       </Command>
     </PopoverContent>
   </Popover>
-);
+)
 
 export function AddProduction({
   className,
   onFormSubmit,
-  isPending, 
-  onSucess, 
+  isPending,
+  onSucess,
+  beamsData,
   ...props
 }: AddProductionProps) {
-  const [filteredLooms, setFilteredLooms] = useState<Loom[]>([])
   const [formData, setFormData] = useState<CreateProduction>({
     beamId: '',
     operatorId: '',
     factoryId: '',
     loomId: '',
     qualityId: '',
+    loomManagement: '',
     date: new Date(),
     shift: '',
     meterProduced: Number(0),
@@ -117,100 +97,56 @@ export function AddProduction({
   });
 
   const [openDropdowns, setOpenDropdowns] = useState({
-    beam: false,
-    operator: false,
     factory: false,
-    loom: false,
-    quality: false,
-    shift: false
+    operator: false,
+    shift: false,
+    loomManagement: false
   });
+
+  const { data: factoriesData } = useQuery({ queryKey: ['factories'], queryFn: getAllFactories })
+  const { data: operatorsData } = useQuery({ queryKey: ['workers'], queryFn: getWorkers })
+  const { data: loomsManageData } = useQuery({ queryKey: ['loommanagement'], queryFn: getAllLoomManage })
+  const { data: qualitiesData } = useQuery({ queryKey: ['quality'], queryFn: getAllQualities })
+  const { data: loomsData } = useQuery({ queryKey: ['looms'], queryFn: getLooms })
+
+  const factories: Factory[] = factoriesData?.data || []
+  const allLooms: LoomManagement[] = loomsManageData?.data || []
+  const workers: Worker[] = operatorsData?.data || []
+
+  const LoomsMap = new Map()
+  loomsData?.data?.forEach((loom: Loom) => LoomsMap.set(loom._id, loom.loomNumber))
+
+  const BeamsMap = new Map()
+  beamsData.forEach((beam: Beam) => BeamsMap.set(beam._id, beam.beamNumber))
+
+  const QualitiesMap = new Map()
+  qualitiesData?.data?.forEach((quality: Quality) => QualitiesMap.set(quality._id, quality.name))
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-     if (
-    !formData.beamId ||
-    !formData.operatorId ||
-    !formData.factoryId ||
-    !formData.loomId ||
-    !formData.qualityId ||
-    !formData.shift
-  ) {
-    toast.error("Please fill in all required fields.");
-    return;
-  }
-    
-    const productionData = {
-      beamId: formData.beamId,
-      operatorId: formData.operatorId,
-      loomId: formData.loomId,
-      factoryId: formData.factoryId,
-      qualityId: formData.qualityId,
-      date: formData.date, 
-      shift: formData.shift,
-      meterProduced: formData.meterProduced,
-      notes: formData.notes
-    };
-
-    if (onFormSubmit) {
-      onFormSubmit(productionData);
+    const { beamId, operatorId, factoryId, loomId, qualityId, shift } = formData;
+    if (!beamId || !operatorId || !factoryId || !loomId || !qualityId || !shift) {
+      toast.error("Please fill in all required fields.");
+      return;
     }
+
+    if (onFormSubmit) onFormSubmit(formData);
 
     setFormData({
       beamId: '',
       operatorId: '',
-      loomId: '',
       factoryId: '',
+      loomId: '',
       qualityId: '',
+      loomManagement: '',
       date: new Date(),
       shift: '',
       meterProduced: Number(0),
       notes: ''
     });
+
   };
-
-  const { data: factoriesData } = useQuery({
-    queryKey: ['factories'],
-    queryFn: getAllFactories
-  })
-
-  const { data: loomsData } = useQuery({
-    queryKey: ['looms'],
-    queryFn: getLooms
-  })
-
-  const { data: qualitiesData } = useQuery({
-    queryKey: ['quality'],
-    queryFn: getAllQualities
-  })
-
-  const { data: operatorsData } = useQuery({
-    queryKey: ['workers'],
-    queryFn: getWorkers
-  })
-
-  const { data: beamsData } = useQuery({
-    queryKey: ['beam'],
-    queryFn: getAllBeams
-  })
-
-  const factories: Factory[] = factoriesData?.data || []
-  const allLooms: Loom[] = loomsData?.data || []
-  const qualities: Quality[] = qualitiesData?.data || []
-  const workers: Worker[] = operatorsData?.data || []
-  const beams: Beam[] = beamsData?.data || []
-
-  const operators = useMemo(() => 
-    workers.filter(worker => worker.role === 'operator'), 
-    [workers]
-  );
-
-  useEffect(() => {
-    if (formData.factoryId) {
-      setFilteredLooms(allLooms.filter(loom => loom.factoryId === formData.factoryId))
-    } else {
-      setFilteredLooms([])
-    }
-  }, [formData.factoryId, allLooms])
+  console.log("Submitting data:", formData)
 
   return (
     <div className={cn("flex flex-col gap-6 sm:gap-6", className)} {...props}>
@@ -219,95 +155,80 @@ export function AddProduction({
           <CardTitle className="text-lg sm:text-xl">Add Production</CardTitle>
           <Toaster />
         </CardHeader>
+
         <CardContent>
           <form onSubmit={handleSubmit} className="w-full">
             <div className="flex flex-col gap-4 sm:gap-6 w-full md:w-[80%] lg:w-[60%] xl:w-[50%]">
-              <div className="grid gap-2 sm:gap-3">
-                <Label className="text-sm sm:text-base" htmlFor="beamId">Beam</Label>
-                <CustomCombobox
-                  value={formData.beamId}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, beamId: value }))}
-                  items={beams.map(b => ({ value: b._id || 'unknown', label: b.beamNumber }))}
-                  placeholder="Select Beam"
-                  open={openDropdowns.beam}
-                  onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, beam: open }))}
-                />
-              </div>
-
+              
+              {/* Factory */}
               <div className="grid gap-3">
-                <Label htmlFor="operatorId">Operator</Label>
-                <CustomCombobox
-                  value={formData.operatorId}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, operatorId: value }))}
-                  items={operators.map(op => ({ value: op._id || 'unknown', label: op.name }))}
-                  placeholder="Select operator"
-                  open={openDropdowns.operator}
-                  onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, operator: open }))}
-                />
-              </div>
-
-              <div className="grid gap-3">
-                <Label className="text-sm sm:text-base" htmlFor="factory">Factory</Label>
+                <Label htmlFor="factory">Factory</Label>
                 <CustomCombobox
                   value={formData.factoryId}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, factoryId: value, loomId: '' }))}
-                  items={factories.map(factory => ({ value: factory._id || 'unknown', label: factory.name }))}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, factoryId: value }))}
+                  items={factories.map(factory => ({ value: factory._id, label: factory.name }))}
                   placeholder="Select factory"
                   open={openDropdowns.factory}
                   onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, factory: open }))}
                 />
               </div>
 
-              {formData.factoryId && (
-                <div className="grid gap-3">
-                  <Label className="text-sm sm:text-base" htmlFor="loom">Loom</Label>
-                  <CustomCombobox
-                    value={formData.loomId}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, loomId: value }))}
-                    items={filteredLooms.map(loom => ({ 
-                      value: loom._id || 'unknown', 
-                      label: `${loom.loomNumber}${loom.section ? ` - ${loom.section}` : ''}`
-                    }))}
-                    placeholder="Select loom"
-                    open={openDropdowns.loom}
-                    onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, loom: open }))}
-                  />
-                </div>
-              )}
-
+              {/* Operator */}
               <div className="grid gap-3">
-                <Label className="text-sm sm:text-base" htmlFor="date">Date</Label>
+                <Label htmlFor="operatorId">Operator</Label>
+                <CustomCombobox
+                  value={formData.operatorId}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, operatorId: value }))}
+                  items={workers.map(w => ({ value: w._id, label: w.name }))}
+                  placeholder="Select operator"
+                  open={openDropdowns.operator}
+                  onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, operator: open }))}
+                />
+              </div>
+
+              {/* Loom Management (one combo but sets 3 fields) */}
+              <div className="grid gap-3">
+                <Label htmlFor="loomManagement">Loom Management</Label>
+                <CustomCombobox
+                  value={formData.loomManagement}
+                  onValueChange={(value) => {
+                    const selected = allLooms.find(l => l._id === value);
+                    if (selected) {
+                      setFormData(prev => ({
+                        ...prev,
+                        loomManagement: value,
+                        loomId: selected.loom,
+                        beamId: selected.beam,
+                        qualityId: selected.quality
+                      }));
+                    }
+                  }}
+                  items={allLooms.map(l => ({
+                    value: l._id,
+                    label: `${LoomsMap.get(l.loom) || 'N/A'} | ${BeamsMap.get(l.beam) || 'N/A'} | ${QualitiesMap.get(l.quality) || 'N/A'}`
+                  }))}
+                  placeholder="Select Loom | Beam | Quality"
+                  open={openDropdowns.loomManagement}
+                  onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, loomManagement: open }))}
+                />
+              </div>
+
+              {/* Date */}
+              <div className="grid gap-3">
+                <Label htmlFor="date">Date</Label>
                 <Input
                   id="date"
                   type="date"
                   value={formData.date.toISOString().split('T')[0]}
-                  required
-                  onChange={(e) =>
-                    setFormData({ ...formData, date: new Date(e.target.value) })
-                  }
-                  className="text-sm sm:text-base"
+                  onChange={(e) => setFormData({ ...formData, date: new Date(e.target.value) })}
                 />
               </div>
 
+              {/* Shift */}
               <div className="grid gap-3">
-                <Label className="text-sm sm:text-base" htmlFor="quality">Quality</Label>
+                <Label htmlFor="shift">Shift</Label>
                 <CustomCombobox
-                  value={formData.qualityId}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, qualityId: value }))}
-                  items={qualities.map(quality => ({ 
-                    value: quality._id || 'unknown', 
-                    label: quality.name 
-                  }))}
-                  placeholder="Select quality"
-                  open={openDropdowns.quality}
-                  onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, quality: open }))}
-                />
-              </div>
-
-              <div className="grid gap-3">
-                <Label className="text-sm sm:text-base" htmlFor="shift">Shift</Label>
-                <CustomCombobox
-                  value={String(formData.shift)}
+                  value={formData.shift}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, shift: value }))}
                   items={[
                     { value: 'A', label: 'Shift A' },
@@ -320,39 +241,33 @@ export function AddProduction({
                 />
               </div>
 
+              {/* Meter Produced */}
               <div className="grid gap-3">
-                <Label className="text-sm sm:text-base" htmlFor="meterProduced">Meter Produced</Label>
+                <Label htmlFor="meterProduced">Meter Produced</Label>
                 <Input
                   id="meterProduced"
                   type="number"
-                  placeholder="11.1"
-                  required
                   value={formData.meterProduced}
-                  onChange={(e) =>
-                    setFormData({ ...formData, meterProduced: Number(e.target.value) })
-                  }
+                  onChange={(e) => setFormData({ ...formData, meterProduced: Number(e.target.value) })}
                   onWheel={(e) => e.currentTarget.blur()}
-                  className="text-sm sm:text-base"
                 />
               </div>
 
+              {/* Notes */}
               <div className="grid gap-3">
-                <Label className="text-sm sm:text-base" htmlFor="notes">Notes</Label>
+                <Label htmlFor="notes">Notes</Label>
                 <textarea
                   id="notes"
-                  placeholder="Enter production notes, issues, observations..."
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   rows={4}
-                  className="w-full border rounded-md text-sm sm:text-base"
+                  className="w-full border rounded-md"
                 />
               </div>
 
-              <div className="flex flex-col gap-3 sm:gap-3">
-                <Button type="submit" size="sm" className="w-full text-sm sm:text-base" disabled={isPending}>
-                  {isPending ? 'Creating...' : 'Create'}
-                </Button>
-              </div>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? 'Creating...' : 'Create'}
+              </Button>
             </div>
           </form>
         </CardContent>
