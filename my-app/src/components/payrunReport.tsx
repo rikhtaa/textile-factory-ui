@@ -14,11 +14,10 @@ import { AxiosError } from "axios"
 export function PayrunReport() {
   const [fromDate, setFromDate] = useState("")
   const [toDate, setToDate] = useState("")
-  const [commit, setCommit] = useState(false)
 
   const { data: report, isLoading, error } = useQuery({
-    queryKey: ['payrun', fromDate, toDate, commit],
-    queryFn: () => getPayrunReport(fromDate, toDate, commit),
+    queryKey: ['payrun', fromDate, toDate],
+    queryFn: () => getPayrunReport(fromDate, toDate),
     enabled: !!fromDate && !!toDate,
     retry: 0,
   })
@@ -48,10 +47,6 @@ export function PayrunReport() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <div  className="space-y-2"><Label>From Date</Label><Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="w-full"/></div>
           <div  className="space-y-2"><Label>To Date</Label><Input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="w-full"/></div>
-          <div className="flex items-center gap-2 pt-6">
-            <input type="checkbox" checked={commit} onChange={(e) => setCommit(e.target.checked)} />
-            <Label>Commit Payrun</Label>
-          </div>
         </div>
 
         {isLoading && <div  className="text-center py-8">Loading...</div>}
