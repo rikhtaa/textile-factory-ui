@@ -241,6 +241,28 @@ export type WorkerCredentails={
     password: string
 }
 
+export type ShiftWiseProductionResponse = {
+  _id: string
+  date: string
+  shift: string
+  loom: string
+  operator: string
+  meterProduced: number
+  beamId: string
+  notes: string
+}
+
+export type ShiftWiseProduction = {
+  _id: string
+  beamId: string
+  date: string
+  shift: string
+  meterProduced: number
+  notes?: string
+  loom?: string
+}
+
+
 interface AuthState{
     user: null | LoginFormValues
     setUser: (user: LoginFormValues)=> void
