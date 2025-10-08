@@ -12,9 +12,12 @@ import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { ChevronDownIcon } from "lucide-react"
 import { useState } from "react"
-import { Beam } from "@/store"
+import { Beam, Quality } from "@/store"
 import { Toaster } from "./ui/sonner"
 import { toast } from "sonner"
+import { useQuery } from "@tanstack/react-query"
+import { getAllQualities } from "@/http/api"
+import { CustomCombobox } from "./customCombobox"
 
 
 interface AddBeamProps extends React.ComponentProps<"div"> {
@@ -28,9 +31,13 @@ export function AddBeam({
   isPending,
   ...props
 }: AddBeamProps){
+  const [openDropdowns, setOpenDropdowns] = useState({
+    quality: false,
+  });
   const [formData, setFormData] = useState<Beam>({
     beamNumber: '',
     totalMeters: undefined as unknown as number,
+    quality: '',
     isClosed: false,
   });
 
@@ -38,7 +45,8 @@ export function AddBeam({
     e.preventDefault();
      if (
     !formData.beamNumber ||
-    !formData.totalMeters
+    !formData.totalMeters ||
+    !formData.quality 
     ){
     toast.error("Please fill in all required fields.");
     return;
@@ -50,10 +58,15 @@ export function AddBeam({
     setFormData({
       beamNumber: '',
       totalMeters: undefined as unknown as number,
+      quality: '',
       isClosed: false,
     });
   };
 
+    const { data: qualitiesData } = useQuery({ queryKey: ['quality'], queryFn: getAllQualities })
+    const qualities: Quality[] = qualitiesData?.data || []
+    const QualitiesMap = new Map()
+    qualitiesData?.data?.forEach((quality: Quality) => QualitiesMap.set(quality._id, quality.name))
   return (
     <div className={cn("flex flex-col gap-6 sm:gap-6", className)} {...props}>
       <Card className="w-full">
@@ -93,7 +106,22 @@ export function AddBeam({
                  className="text-sm sm:text-base" 
                 />
               </div>
-             
+
+              <div className="grid gap-3">
+                <Label className="text-sm sm:text-base" htmlFor="quality">Quality</Label>
+                <CustomCombobox
+                  value={formData.quality}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, quality: value }))}
+                  items={qualities.map(q => ({ 
+                    value: q._id || 'unknown', 
+                    label: q.name 
+                  }))}
+                  placeholder="Select quality"
+                  open={openDropdowns.quality}
+                  onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, quality: open }))}
+                />
+              </div>
+   
               <div className="grid gap-2 sm:gap-3">
                 <Label className="text-sm sm:text-base">Beam Status</Label>
                 <DropdownMenu>
