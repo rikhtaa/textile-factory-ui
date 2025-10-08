@@ -1,8 +1,8 @@
 'use client'
 import { AddProduction } from '@/components/addProduction'
-import { FilterType, ProductionTable } from '@/components/productionTable';
+import { ProductionTable } from '@/components/productionTable';
 import { createProduction, getAllBeams, getListProduction } from '@/http/api';
-import { ApiErrorResponse, CreateProduction } from '@/store';
+import { ApiErrorResponse, CreateProduction, FilterType } from '@/store';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import React, { useState } from 'react'
@@ -14,8 +14,8 @@ export default function Page() {
       loomId: "",
       factoryId: "",
       operatorId: "",
-      beamId: "",
       qualityId: "",
+      beamId: ""
     })
   const { data: beamsData } = useQuery({ queryKey: ['beam'], queryFn: getAllBeams })  
   const {mutate: userMutate, error, isSuccess, isPending} = useMutation({

@@ -13,6 +13,7 @@ export interface Beam{
   _id?: string | undefined
   beamNumber: string
   totalMeters: number
+  quality: string
   isClosed: boolean
 }
 export interface ProductionRecord {
