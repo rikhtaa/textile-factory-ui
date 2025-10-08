@@ -5,6 +5,7 @@ import { DailyQualityReport } from '@/components/dailyQualityReportTable'
 import { DailyLoomsReport } from '@/components/dailyReportsTable'
 import { OperatorPeriodReport } from '@/components/operatorPeriodReportTable'
 import { PayrunReport } from '@/components/payrunReport'
+import { ShiftWiseProductionReport } from '@/components/ShiftWiseProduction'
 import React from 'react'
 
 export default function Page() {
@@ -19,6 +20,7 @@ export default function Page() {
             <OperatorPeriodReport/>
             <PayrunReport/>
             <BeamUsageReport/>
+            <ShiftWiseProductionReport/>
          </div>
           </div>
   )

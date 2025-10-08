@@ -9,6 +9,7 @@ import { ApiErrorResponse, PayrunResponse } from "@/store"
 import { toast } from "sonner"
 import { Toaster } from "./ui/sonner"
 import { AxiosError } from "axios"
+import { Button } from "./ui/button"
 
 
 export function PayrunReport() {
@@ -88,6 +89,9 @@ export function PayrunReport() {
                     <h5 className="font-semibold text-sm mb-3">Production Breakdown</h5>
                     
                     <div className="hidden sm:block overflow-x-auto">
+                       <div className="m-3">
+                          <Button  onClick={()=> window.print()}>Download as PDF</Button>
+                        </div>
                       <table className="w-full border-collapse border text-sm">
                         <thead>
                           <tr className="bg-gray-100">

@@ -36,6 +36,9 @@ export function DailyQualityReport() {
           <div>
             <h3 className="font-semibold mb-4 text-sm md:text-base mb-3">Quality Report for {dailyData.date}</h3>
             <div className="overflow-x-auto">
+               <div className="m-3">
+                  <Button  onClick={()=> window.print()}>Download as PDF</Button>
+               </div>
             <table className="w-full border-collapse border">
               <thead><tr className="bg-gray-100">
                 <th className="border p-2 text-left">Quality Name</th>

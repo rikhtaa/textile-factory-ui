@@ -83,6 +83,9 @@ const updateMutation = useMutation({
   return (
     <div className="border rounded-lg overflow-hidden bg-white shadow-sm">
     <div className="overflow-x-auto">
+      <div className="m-3">
+          <Button  onClick={()=> window.print()}>Download as PDF</Button>
+      </div>
     <table className="w-full border-collapse border  min-w-[800px] sm:min-w-0">
       <thead>
         <tr className="bg-gray-100">

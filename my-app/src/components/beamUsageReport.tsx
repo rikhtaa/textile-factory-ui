@@ -7,7 +7,8 @@ import { getBeamUsageReport, getLooms, getAllBeams } from "@/http/api"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
 import { BeamUsageResponse, Beam, Loom } from "@/store"
-import { CustomCombobox } from "./addProduction"
+import { CustomCombobox } from "../components/customCombobox"
+import { Button } from "./ui/button"
 
 export function BeamUsageReport() {
   const [startDate, setStartDate] = useState("")
@@ -116,6 +117,9 @@ export function BeamUsageReport() {
             
             {beamUsageData.length > 0 ? (
               <div className="overflow-x-auto">
+                 <div className="m-3">
+                  <Button  onClick={()=> window.print()}>Download as PDF</Button>
+                 </div>
                 <table className="w-full border-collapse border">
                   <thead>
                     <tr className="bg-gray-100">

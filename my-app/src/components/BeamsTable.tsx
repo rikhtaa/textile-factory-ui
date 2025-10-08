@@ -1,7 +1,7 @@
 "use client"
-import { deleteBeam, updateBeam } from "@/http/api"
-import { ApiErrorResponse, Beam } from "@/store"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { deleteBeam, getAllQualities, updateBeam } from "@/http/api"
+import { ApiErrorResponse, Beam, Quality } from "@/store"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { toast } from "sonner"
 import { Button } from "./ui/button"
@@ -38,7 +38,7 @@ export function BeamsTable({ beams }: { beams: Beam[] }) {
       }
     })
   
-  const updateMutation = useMutation({
+    const updateMutation = useMutation({
       mutationFn: ({ id, data }: { id: string; data: Partial<Beam> }) => 
       updateBeam(id, data),
       onMutate: async ({ id, data }) => {
@@ -83,21 +83,32 @@ export function BeamsTable({ beams }: { beams: Beam[] }) {
         handleUpdate(_id!, updateData)
       }
     }
+      const { data: qualitiesData } = useQuery({ queryKey: ['quality'], queryFn: getAllQualities })
+      const QualitiesMap = new Map()
+      qualitiesData?.data?.forEach((quality: Quality) => QualitiesMap.set(quality._id, quality.name))
+      const qualities: Quality[] = qualitiesData?.data || []
+    
   return (
     <div className="border rounded-lg overflow-hidden bg-white shadow-sm">
     <div className="overflow-x-auto">
+       <div className="m-3">
+          <Button  onClick={()=> window.print()}>Download as PDF</Button>
+       </div>
     <table className="w-full border-collapse border min-w-[800px] sm:min-w-0">
       <thead>
         <tr className="bg-gray-100">
           <th className="border px-4 py-2 sm:p-3 text-left font-semibold text-xs sm:text-sm">Beam Number</th>
           <th className="border px-4 py-2 sm:p-3 text-left font-semibold text-xs sm:text-sm">Total Meters</th>
+          {/* <th className="border px-4 py-2 sm:p-3 text-left font-semibold text-xs sm:text-sm">Quality</th> */}
           <th className="border px-4 py-2 sm:p-3 text-left font-semibold text-xs sm:text-sm">Status</th>
+          <th className="border px-4 py-2 sm:p-3 text-left font-semibold text-xs sm:text-sm">Actions</th>
+          <th className="border px-4 py-2 sm:p-3 text-left font-semibold text-xs sm:text-sm">Beam is less than 500</th>
         </tr>
       </thead>
       <tbody>
-        {beams.map((beam, i) => (
-  <tr key={beam._id || i} className="hover:bg-gray-50 even:bg-gray-50/50">
-    <td className="border sm:p-3 p-2">
+    {beams.map((beam, i) => (
+      <tr key={beam._id || i} className="hover:bg-gray-50 even:bg-gray-50/50">
+     <td className="border sm:p-3 p-2">
       <input 
         value={editingBeam?._id === beam._id ? editingBeam?.beamNumber : beam.beamNumber}
         onChange={(e) => editingBeam?._id === beam._id && 
@@ -115,6 +126,15 @@ export function BeamsTable({ beams }: { beams: Beam[] }) {
         readOnly={editingBeam?._id !== beam._id}
       />
     </td>
+    {/* <td className="border sm:p-3 p-2">
+      <input
+        value={editingBeam?._id === beam._id ? editingBeam?.quality : beam.quality}
+        onChange={(e) => editingBeam?._id === beam._id && 
+          setEditingBeam(prev => prev ? { ...prev, quality: e.target.value} : null)}
+        className="w-full px-2 py-1 border rounded text-xs sm:text-sm"
+        readOnly={editingBeam?._id !== beam._id}
+      />
+    </td> */}
     <td className="border sm:p-3 p-2">
       <select
         value={editingBeam?._id === beam._id ? editingBeam?.isClosed?.toString() : beam.isClosed?.toString()}
@@ -144,6 +164,14 @@ export function BeamsTable({ beams }: { beams: Beam[] }) {
          >{deleteMutaution.isPending ? "Deleting..." : "Delete"}</Button>
       </div>
      </td>
+      { beam?.totalMeters < 500 &&
+        (<td>
+         <div>
+          <Button size="sm" className="text-xs sm:text-sm" variant="destructive">
+           Use another Beam
+         </Button>
+         </div>
+      </td>)}
   </tr>
 ))}
       </tbody>

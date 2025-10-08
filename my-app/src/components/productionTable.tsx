@@ -5,24 +5,9 @@ import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { useQuery } from "@tanstack/react-query"
 import { getAllFactories, getAllQualities, getLooms, getWorkers } from "@/http/api"
-import { BeamResponse, Factory, Loom, ProductionRecord, Quality, Worker } from "@/store"
-import { CustomCombobox } from "./addProduction"
- export interface FilterType {
-  date: string;
-  loomId: string;
-  factoryId: string;
-  operatorId: string;
-  beamId: string
-  qualityId: string
-}
-interface ProductionTableProps {
-  beamsData: BeamResponse[]
-  filters: FilterType;
-  setFilters: React.Dispatch<React.SetStateAction<FilterType>>;
-  productionData: ProductionRecord[];
-  isLoading: boolean;
-  error?: Error | null;
-}
+import { BeamResponse, Factory, FilterType, Loom, ProductionRecord, ProductionTableProps, Quality, Worker } from "@/store"
+import { CustomCombobox } from "../components/customCombobox"
+
 export function ProductionTable({beamsData, filters, setFilters, productionData, isLoading,   error = null}: ProductionTableProps ) {
     const [openDropdowns, setOpenDropdowns] = useState({
       beam: false,
@@ -97,8 +82,7 @@ beams.forEach(beam => {
     });
   }
 });  
-  
-
+ 
   return (
     <div className="space-y-4 p-2">
       <div className="bg-gray-50 rounded-lg p-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -185,7 +169,10 @@ beams.forEach(beam => {
       </div>
 
       <div className="border rounded-lg overflow-auto">
-        <table className="w-full min-w-[800px]">
+        <div className="m-3">
+          <Button  onClick={()=> window.print()}>Download as PDF</Button>
+       </div>
+        <table className="w-full min-w-[800px]" id='print-area print-area-wrapper'>
           <thead>
             <tr className="bg-gray-100">
               <th className="p-2 text-left text-sm">Date</th>

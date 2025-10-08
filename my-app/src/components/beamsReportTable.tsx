@@ -7,7 +7,7 @@ import { getBeamsReport, getLooms } from "@/http/api"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
 import { BeamsReportResponse, Loom } from "@/store"
-import { CustomCombobox } from "./addProduction"
+import { CustomCombobox } from "../components/customCombobox"
 
 export function BeamsReport() {
   const [dateFrom, setDateFrom] = useState("")
@@ -81,7 +81,9 @@ export function BeamsReport() {
 
         {isLoading && <div className="text-center py-8">Loading report...</div>}
         {error && <div className="text-red-500 text-center py-4">Error loading report</div>}
-        
+        <div className="m-3">
+          <Button  onClick={()=> window.print()}>Download as PDF</Button>
+       </div>
         {beamsData ? (
           <div className="space-y-6">
             <h3 className="font-semibold  text-lg text-center sm:text-left">
@@ -145,7 +147,6 @@ export function BeamsReport() {
                   </table>
                 </div>
 
-                {/* Mobile Cards */}
                 <div className="sm:hidden space-y-3">
                   {beamsData.details.map((beam) => (
                     <div key={beam._id} className="border rounded-lg p-4 bg-white">

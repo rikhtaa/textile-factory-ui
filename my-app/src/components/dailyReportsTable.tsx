@@ -10,7 +10,7 @@ import { DailyLoomsResponse } from "@/store"
 
 export function DailyLoomsReport() {
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split('T')[0] // Today's date as default
+    new Date().toISOString().split('T')[0] 
   )
 
   const { data: report, isLoading, error } = useQuery({
@@ -71,6 +71,9 @@ export function DailyLoomsReport() {
               <div className="mt-4">
                 <h4 className="font-semibold text-sm md:text-base mb-2">Production Details</h4>
                 <div className="overflow-x-auto">
+                   <div className="m-3">
+                     <Button  onClick={()=> window.print()}>Download as PDF</Button>
+                  </div>
                 <table className="w-full border-collapse border mt-2">
                   <thead>
                     <tr className="bg-gray-100">

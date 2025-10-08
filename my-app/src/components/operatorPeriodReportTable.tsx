@@ -6,7 +6,8 @@ import { getOperatorPeriodReport, getWorkers } from "@/http/api"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
 import { Operator15DayResponse, OperatorPeriodResponse, Worker } from "@/store"
-import { CustomCombobox } from "./addProduction"
+import { CustomCombobox } from "../components/customCombobox"
+import { Button } from "./ui/button"
 
 export function OperatorPeriodReport() {
   const [operatorId, setOperatorId] = useState("")
@@ -88,6 +89,9 @@ export function OperatorPeriodReport() {
              {operatorData.daily && operatorData.daily.length > 0 ? (
               <>
               <div className="hidden sm:block overflow-x-auto">
+                 <div className="m-3">
+                  <Button  onClick={()=> window.print()}>Download as PDF</Button>
+               </div>
               <table className="w-full border-collapse border text-sm">
                 <thead><tr className="bg-gray-100">
                   <th className="border p-2 text-left">Quality</th>

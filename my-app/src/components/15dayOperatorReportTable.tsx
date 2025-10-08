@@ -6,7 +6,8 @@ import { get15DayOperatorReport, getWorkers } from "@/http/api"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
 import {  Operator15DayResponse, Worker } from "@/store"
-import { CustomCombobox } from "./addProduction"
+import { CustomCombobox } from "../components/customCombobox"
+import { Button } from "./ui/button"
 
 export function Operator15DayReport() {
   const [operatorId, setOperatorId] = useState("")
@@ -89,8 +90,10 @@ export function Operator15DayReport() {
 
             {allQualities.length > 0 ? (
               <>
-                {/* Desktop Table */}
                 <div className="hidden sm:block overflow-x-auto">
+                   <div className="m-3">
+                            <Button  onClick={()=> window.print()}>Download as PDF</Button>
+                   </div>
                   <table className="w-full border-collapse border text-sm">
                     <thead>
                       <tr className="bg-gray-100">
@@ -113,7 +116,6 @@ export function Operator15DayReport() {
                   </table>
                 </div>
 
-                {/* Mobile Cards */}
                 <div className="sm:hidden space-y-3">
                   {allQualities.map((quality, index) => (
                     <div key={index} className="border rounded-lg p-4 bg-white shadow-sm">

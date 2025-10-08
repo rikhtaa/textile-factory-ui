@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { CustomCombobox } from "@/components/customCombobox"
 import { getAllBeams, getShiftWiseProduction } from "@/http/api"
 import { BeamResponse, ShiftWiseProduction } from "@/store"
+import { Button } from "./ui/button"
 
 const shiftOptions = [
   { label: "Shift A", value: "A" },
@@ -70,6 +71,9 @@ export function ShiftWiseProductionReport() {
 
         {productions.length > 0 ? (
           <div className="overflow-x-auto">
+             <div className="m-3">
+                <Button  onClick={()=> window.print()}>Download as PDF</Button>
+              </div>
             <table className="w-full border-collapse border text-sm">
               <thead>
                 <tr className="bg-gray-100">

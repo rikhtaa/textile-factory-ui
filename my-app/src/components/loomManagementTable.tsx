@@ -49,6 +49,9 @@ export function LoomsManagement({ loomsManageData, beamsData,  qualitiesData, lo
   return (
     <div className="border rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
+           <div className="m-3">
+           <Button  onClick={()=> window.print()}>Download as PDF</Button>
+          </div>
           <table className="w-full border-collapse min-w-[600px] sm:min-w-0">
             <thead>
                <tr className="bg-gray-100">
