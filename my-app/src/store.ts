@@ -241,6 +241,30 @@ export type WorkerCredentails={
     password: string
 }
 
+export interface AddProductionProps extends React.ComponentProps<"div"> {
+  onFormSubmit?: (formData: CreateProduction) => void;
+  onSucess: boolean | undefined
+  isPending: boolean | undefined
+  beamsData: Beam[]
+}
+
+export interface FilterType {
+  date: string;
+  loomId: string;
+  factoryId: string;
+  operatorId: string;
+  beamId: string;
+  qualityId: string;
+}
+export interface ProductionTableProps {
+  beamsData: BeamResponse[]
+  filters: FilterType;
+  setFilters: (filter: any) => void;
+  productionData: ProductionRecord[];
+  isLoading: boolean;
+  error?: Error | null;
+}
+
 export type ShiftWiseProductionResponse = {
   _id: string
   date: string
