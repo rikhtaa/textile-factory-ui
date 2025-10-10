@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { getOperatorPeriodReport, getWorkers } from "@/http/api"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
-import { Operator15DayResponse, OperatorPeriodResponse, Worker } from "@/store"
+import { OperatorPeriodResponse, Worker } from "@/store"
 import { CustomCombobox } from "../components/customCombobox"
 import { Button } from "./ui/button"
 
@@ -32,17 +32,14 @@ export function OperatorPeriodReport() {
       operator: false,
     });
 
-  const operatorData: Operator15DayResponse = report?.data
-    const totalMeters =
+  const operatorData: OperatorPeriodResponse = report?.data
+  const totalMeters =
   operatorData?.daily?.reduce(
     (sum, day) =>
-      sum + day.qualities.reduce((qSum, q) => qSum + (q.meters || 0), 0),
+      sum +
+      day.productions.reduce((pSum, p) => pSum + (p.meters || 0), 0),
     0
   ) || 0;
-
-  const allQualities = operatorData?.daily?.flatMap(day => 
-    day.qualities.map(quality => ({ ...quality, date: day.date }))
-  ) || [];
   
   return (
     <Card  className="w-full">
@@ -94,49 +91,47 @@ export function OperatorPeriodReport() {
                </div>
               <table className="w-full border-collapse border text-sm">
                 <thead><tr className="bg-gray-100">
-                  <th className="border p-2 text-left">Quality</th>
-                  <th className="border p-2 text-left">Price per meter</th>
-                  <th className="border p-2 text-left">Meters</th>
-                  <th className="border p-2 text-left">Amount</th>
+                  <th className="border p-2 text-left">Date</th>
+                        <th className="border p-2 text-left">Loom</th>
+                        <th className="border p-2 text-left">Shift</th>
+                        <th className="border p-2 text-left">Quality</th>
+                        <th className="border p-2 text-right">Price/m</th>
+                        <th className="border p-2 text-right">Meters</th>
+                        <th className="border p-2 text-right">Amount</th>
                 </tr></thead>
                 <tbody>
-                  {operatorData.daily.map((day, index) => (
-                      day.qualities.map((quality)=>(
-                        <tr key={index}>
-                          <td className="border p-2 " key={quality._id}>{quality.qualityName }</td>
-                          <td className="border p-2 text-right" key={quality._id}>{quality.pricePerMeter}</td>
-                          <td className="border p-2 text-right" key={quality._id}>{quality.meters}</td>
-                          <td className="border p-2 text-right" key={quality._id}>{quality.amount}</td>
-                        </tr>
-                      )))
-                    )
-                  }
+                 {operatorData.daily.flatMap((day, i) =>
+                        day.productions.map((prod, j) => (
+                          <tr key={`${i}-${j}`}>
+                            <td className="border p-2">{day.date}</td>
+                            <td className="border p-2">{prod.loomName || "—"}</td>
+                            <td className="border p-2">{prod.shift || "—"}</td>
+                            <td className="border p-2">{prod.qualityName}</td>
+                            <td className="border p-2 text-right">{prod.pricePerMeter}</td>
+                            <td className="border p-2 text-right">{prod.meters}</td>
+                            <td className="border p-2 text-right">{prod.amount}</td>
+                          </tr>
+                        ))
+                      )}
                 </tbody>
               </table>
               </div>
                <div className="sm:hidden space-y-3">
-                  {allQualities.map((quality, index) => (
-                    <div key={index} className="border rounded-lg p-4 bg-white shadow-sm">
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div className="space-y-1">
-                          <p className="font-semibold text-gray-600">Quality</p>
-                          <p>{quality.qualityName}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="font-semibold text-gray-600">Price/m</p>
-                          <p>{quality.pricePerMeter}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="font-semibold text-gray-600">Meters</p>
-                          <p>{quality.meters}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="font-semibold text-gray-600">Amount</p>
-                          <p className="font-bold">{quality.amount}</p>
+                  {operatorData.daily.flatMap((day, i) =>
+                    day.productions.map((prod, index) => (
+                      <div key={`${i}-${index}`} className="border rounded-lg p-4 bg-white shadow-sm">
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <p><span className="font-semibold text-gray-600">Date:</span> {day.date}</p>
+                          <p><span className="font-semibold text-gray-600">Loom:</span> {prod.loomName}</p>
+                          <p><span className="font-semibold text-gray-600">Shift:</span> {prod.shift}</p>
+                          <p><span className="font-semibold text-gray-600">Quality:</span> {prod.qualityName}</p>
+                          <p><span className="font-semibold text-gray-600">Price/m:</span> {prod.pricePerMeter}</p>
+                          <p><span className="font-semibold text-gray-600">Meters:</span> {prod.meters}</p>
+                          <p><span className="font-semibold text-gray-600">Amount:</span> <b>{prod.amount}</b></p>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </>
             ) : (

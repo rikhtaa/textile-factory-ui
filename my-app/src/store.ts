@@ -114,12 +114,23 @@ export interface OperatorPeriodResponse {
   to: string;
   daily: Array<{
     date: string;
-    loomNumber: string;
-    qualityName: string;
-    meters: number;
+    productions: Array<{
+      qualityId: string;
+      qualityName: string;
+      pricePerMeter: number;
+      meters: number;
+      amount: number;
+      loomId: string;
+      loomName: string;
+      shift: string;
+    }>;
+    total: number;
   }>;
   totalPayable: number;
+  looms: string[];
+  shifts: string[];
 }
+
 
 export interface Operator15DayResponse {
    operatorId: string;
