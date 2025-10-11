@@ -19,24 +19,24 @@ import { Controller, useForm } from "react-hook-form"
 interface AddLoomProps extends React.ComponentProps<"div"> {
   onFormSubmit?: (formData: Loom) => void;
   isPending: boolean | undefined
-  onSubmitHandler: (formData: LoomManagement)=> void
   beamsData: Beam[]
   qualitiesData: Quality[]
-  loomsData: Loom[] 
+  loomsData: Loom[],
+  userMutate: (formData: LoomManagement) => void
 }
 
 export function AddLoomManagement({
   className,
   onFormSubmit,
   isPending, 
-  onSubmitHandler,
   beamsData,
   qualitiesData,
   loomsData,
+  userMutate,
   ...props
 }: AddLoomProps){
     // rhf builds the object and pass that object to handlesubmit and handlesubmit gives that object to custom function?
-  const { control, register,  handleSubmit } = useForm<LoomManagement>();
+  const { control, register,  handleSubmit, reset } = useForm<LoomManagement>();
 
   const [openDropdowns, setOpenDropdowns] = useState({
     loom: false,
@@ -44,6 +44,11 @@ export function AddLoomManagement({
     quality: false,
     beamDate: false
   }); 
+
+  const onSubmitHandler = async(formData: LoomManagement)=>{
+    userMutate(formData)
+    reset()
+  }
 
   return (
     <div className={cn("flex flex-col gap-6 sm:gap-6", className)} {...props}>

@@ -1,17 +1,13 @@
 'use client'
 import { createLoomManagement, getAllBeams, getAllLoomManage, getAllQualities, getLooms } from "@/http/api"
-import { ApiErrorResponse, LoomManagement } from "@/store";
+import { ApiErrorResponse } from "@/store";
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { AxiosError } from "axios";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { LoomsManagement } from "@/components/loomManagementTable";
 import { AddLoomManagement } from "@/components/addLoomManagement";
 
-
-export default function page(){
-  // rhf builds the object and pass that object to handlesubmit and handlesubmit gives that object to custom function?
-  const { reset } = useForm<LoomManagement>();
+export default function LoomsManagementPage(){
 
   const {data: loomsManageData, refetch} = useQuery({
     queryKey:['loommanagement'],
@@ -50,11 +46,6 @@ export default function page(){
    queryFn: getAllQualities
   })
      
-
-  const onSubmitHandler = async(formData: LoomManagement)=>{
-    userMutate(formData)
-    reset()
-  }
   return(
       <div className='w-full flex items-center justify-center overflow-hidden'>
         <div className='flex flex-col gap-7 w-[85%] py-[1rem]'>
@@ -64,7 +55,7 @@ export default function page(){
              beamsData={beamsData?.data || []}  
              qualitiesData={qualitiesData?.data|| []} 
              loomsData={loomsData?.data || []}
-             onSubmitHandler={onSubmitHandler}
+             userMutate={userMutate}
              />
               <LoomsManagement 
               loomsManageData={loomsManageData?.data || []} 
