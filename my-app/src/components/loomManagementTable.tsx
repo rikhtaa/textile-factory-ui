@@ -56,8 +56,9 @@ export function LoomsManagement({ loomsManageData, beamsData,  qualitiesData, lo
             <thead>
                <tr className="bg-gray-100">
                 <th className="sm:p-3 text-left font-semibold text-xs sm:text-sm">Loom Number</th>
-                <th className="sm:p-3 text-left font-semibold text-xs sm:text-sm">Factory</th>
-                <th className="sm:p-3 text-left font-semibold text-xs sm:text-sm">Status</th>
+                <th className="sm:p-3 text-left font-semibold text-xs sm:text-sm">Beam</th>
+                <th className="sm:p-3 text-left font-semibold text-xs sm:text-sm">Quality</th>
+                <th className="sm:p-3 text-left font-semibold text-xs sm:text-sm">Date</th>
                 <th className="sm:p-3 text-left font-semibold text-xs sm:text-sm">Actions</th>
                </tr>
             </thead>
@@ -68,18 +69,21 @@ export function LoomsManagement({ loomsManageData, beamsData,  qualitiesData, lo
                 <Input
                   value={LoomsMap.get(loom.loom) || loom.loom}
                   className="w-full px-2 py-1 border rounded text-sm sm:text-base"
+                  readOnly
                 />
               </td>
               <td className="border p-3 sm:p-3 text-sm">
                 <Input
                   value={BeamsMap.get(loom.beam)}
                   className="w-full px-2 py-1 border rounded text-sm sm:text-base"
+                  readOnly
                 />
               </td>
               <td className="border p-3 sm:p-3 text-sm">
                 <Input
                   value={QualitiesMap.get(loom.quality)}
                   className="w-full px-2 py-1 border rounded text-sm sm:text-base"
+                  readOnly
                 />
               </td>
               <td className="border p-3 sm:p-3 text-sm">
@@ -90,19 +94,11 @@ export function LoomsManagement({ loomsManageData, beamsData,  qualitiesData, lo
                    day: "numeric",
                   })}
                   className="w-full px-2 py-1 border rounded text-sm sm:text-base"
+                  readOnly
                 />
               </td>
               <td className="border p-2 sm:p-3">
                 <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-1 sm:space-y-0"> 
-                  {/* {loom?._id === loom._id ? (
-                    <Button className="text-xs sm:text-sm" size="sm" variant="outline" onClick={handleSaveEdit}>
-                      Save
-                    </Button>
-                      ) : (
-                   <Button className="text-xs sm:text-sm" size="sm" variant="outline" onClick={() => handleEditClick(w)}>
-                     Edit
-                   </Button>
-                  )} */}
                    <Button className="text-xs sm:text-sm" size="sm" variant="destructive" 
                     onClick={()=> handleDelete(loom._id)}
                     disabled={deleteMutaution.isPending}

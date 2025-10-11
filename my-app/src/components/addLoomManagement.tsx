@@ -1,123 +1,126 @@
-"use client";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+"use client"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { ChevronDownIcon } from "lucide-react";
-import { useState } from "react";
-import { Toaster } from "./ui/sonner";
-import { toast } from "sonner";
-import { useForm } from "react-hook-form";
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { useState } from "react"
+import { Beam, Loom, LoomManagement, Quality } from "@/store"
+import { Toaster } from "./ui/sonner"
+import { CustomCombobox } from "./customCombobox"
+import { Controller, useForm } from "react-hook-form"
 
-interface WorkerForm {
-  _id: string
-  name: string;
-  phone: string;
-  cnic: string;
-  address: string;
-  hireDate: string; 
-  status: string;
+
+interface AddLoomProps extends React.ComponentProps<"div"> {
+  onFormSubmit?: (formData: Loom) => void;
+  isPending: boolean | undefined
+  onSubmitHandler: (formData: LoomManagement)=> void
+  beamsData: Beam[]
+  qualitiesData: Quality[]
+  loomsData: Loom[] 
 }
 
-interface AddWorkerProps extends React.ComponentProps<"div"> {
-  onFormSubmit?: (formData: WorkerForm) => void;
-  isPending: boolean | undefined;
-}
-
-export function AddWorker({
+export function AddLoomManagement({
   className,
   onFormSubmit,
-  isPending,
+  isPending, 
+  onSubmitHandler,
+  beamsData,
+  qualitiesData,
+  loomsData,
   ...props
-}: AddWorkerProps) {
-  const { register, handleSubmit, reset } = useForm<WorkerForm>();
-  const [status, setStatus] = useState(""); 
+}: AddLoomProps){
+    // rhf builds the object and pass that object to handlesubmit and handlesubmit gives that object to custom function?
+  const { control, register,  handleSubmit } = useForm<LoomManagement>();
 
-  const submitHandler = (data: WorkerForm) => {
-    if (!status) {
-      toast.error("Please select a status.");
-      return;
-    }
-
-    const workerData = { ...data, status };
-    onFormSubmit?.(workerData);
-
-    reset();
-    setStatus("");
-  };
+  const [openDropdowns, setOpenDropdowns] = useState({
+    loom: false,
+    beam: false,
+    quality: false,
+    beamDate: false
+  }); 
 
   return (
     <div className={cn("flex flex-col gap-6 sm:gap-6", className)} {...props}>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="text-lg sm:text-xl">Add worker</CardTitle>
-          <Toaster />
-        </CardHeader>
-        <CardContent className="px-4 sm:px-6">
-          <form onSubmit={handleSubmit(submitHandler)} className="w-full">
-            <div className="flex flex-col gap-4 sm:gap-6 w-full md:w-[80%] lg:w-[60%] xl:w-[50%]">
-              <div className="grid gap-2 sm:gap-3">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" placeholder="John Doe" required {...register("name")} />
-              </div>
+       <Card className="w-full">
+            <CardHeader>
+              <CardTitle className="text-lg sm:text-xl">Add Beam and Quality</CardTitle>
+                 <Toaster />
+                  </CardHeader>
+                  <CardContent className="px-4 sm:px-6">
+                    <form  className="w-full" onSubmit={handleSubmit(onSubmitHandler)}>
+                      <div className="flex flex-col gap-4 sm:gap-6 w-full md:w-[80%] lg:w-[60%] xl:w-[50%]">
+                       <div className="grid gap-2 sm:gap-3">
+                        <Controller 
+                          name="loom"
+                          control={control}
+                          rules={{ required: true }}
+                          render={({ field }) => (
+                          <CustomCombobox
+                           value={field.value}
+                           onValueChange={field.onChange}
+                           items={loomsData?.map((loom: Loom) => ({value: loom._id, label: loom.loomNumber}))}
+                           placeholder="Select Loom"
+                           open={openDropdowns.loom}
+                           onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, loom: open }))}
+                          />
+                          )}
+                        />
+                      </div>
 
-              <div className="grid gap-2 sm:gap-3">
-                <Label htmlFor="address">Address</Label>
-                <Input id="address" placeholder="Houston, TX" required {...register("address")} />
-              </div>
+                       <div className="grid gap-2 sm:gap-3">
+                        <Controller 
+                          name="beam"
+                          control={control}
+                          rules={{ required: true }}
+                          render={({ field }) => (
+                          <CustomCombobox
+                           value={field.value}
+                           onValueChange={field.onChange}
+                           items={beamsData?.map((beam: Beam) => ({value: beam._id, label: beam.beamNumber}))}
+                           placeholder="Select Beam"
+                           open={openDropdowns.beam}
+                           onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, beam: open }))}
+                          />
+                          )}
+                        />
+                      </div>
+                       <div className="grid gap-2 sm:gap-3">
+                        <Controller 
+                          name="quality"
+                          control={control}
+                          rules={{ required: true }}
+                          render={({ field }) => (
+                          <CustomCombobox
+                           value={field.value}
+                           onValueChange={field.onChange}
+                           items={qualitiesData?.map((quality: Quality) => ({value: quality._id, label: quality.name}))}
+                           placeholder="Select Quality"
+                           open={openDropdowns.quality}
+                           onOpenChange={(open) => setOpenDropdowns(prev => ({ ...prev, quality: open }))}
+                          />
+                          )}
+                        />
+                      </div>
+                       <div className="grid gap-2 sm:gap-3">
+                         <Label htmlFor="beamDate">Beam Date</Label>
+                         <Input id="beamDate" type="date" required {...register("beamDate")} />
+                      </div>
 
-              <div className="grid gap-2 sm:gap-3">
-                <Label htmlFor="phone">Phone</Label>
-                <Input id="phone" type="text" placeholder="+921347265271" required {...register("phone")} />
-              </div>
-
-              <div className="grid gap-2 sm:gap-3">
-                <Label htmlFor="cnic">CNIC</Label>
-                <Input id="cnic" type="text" placeholder="456456666656" required {...register("cnic")} />
-              </div>
-
-              <div className="grid gap-2 sm:gap-3">
-                <Label htmlFor="hireDate">Hire Date</Label>
-                <Input id="hireDate" type="date" required {...register("hireDate")} />
-              </div>
-
-              <div className="grid gap-2 sm:gap-3">
-                <Label>Status</Label>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-full justify-between">
-                      {status || "Status"}
-                      <ChevronDownIcon className="h-4 w-4 opacity-50" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem onSelect={() => setStatus("active")}>active</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => setStatus("inactive")}>inactive</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full" disabled={isPending}>
-                  {isPending ? "Creating..." : "Create"}
-                </Button>
+                      <div className="flex flex-col gap-3">
+                      <Button type="submit" className="w-full" disabled={isPending}>
+                        {isPending ? "Creating..." : "Create"}
+                     </Button>
               </div>
             </div>
           </form>
-        </CardContent>
-      </Card>
+                  </CardContent>
+                </Card>
     </div>
-  );
+  )
 }
