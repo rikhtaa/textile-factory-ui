@@ -36,10 +36,10 @@ export function OperatorPeriodReport() {
   const totalMeters =
   operatorData?.daily?.reduce(
     (sum, day) =>
-      sum +
-      day.productions.reduce((pSum, p) => pSum + (p.meters || 0), 0),
+      sum + (day.productions?.reduce((pSum, p) => pSum + (p.meters || 0), 0) || 0),
     0
   ) || 0;
+
   
   return (
     <Card  className="w-full">
@@ -101,7 +101,7 @@ export function OperatorPeriodReport() {
                 </tr></thead>
                 <tbody>
                  {operatorData.daily.flatMap((day, i) =>
-                        day.productions.map((prod, j) => (
+                        day.productions?.map((prod, j) => (
                           <tr key={`${i}-${j}`}>
                             <td className="border p-2">{day.date}</td>
                             <td className="border p-2">{prod.loomName || "—"}</td>
@@ -118,7 +118,7 @@ export function OperatorPeriodReport() {
               </div>
                <div className="sm:hidden space-y-3">
                   {operatorData.daily.flatMap((day, i) =>
-                    day.productions.map((prod, index) => (
+                    day.productions?.map((prod, index) => (
                       <div key={`${i}-${index}`} className="border rounded-lg p-4 bg-white shadow-sm">
                         <div className="grid grid-cols-2 gap-3 text-sm">
                           <p><span className="font-semibold text-gray-600">Date:</span> {day.date}</p>

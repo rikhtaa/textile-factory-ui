@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { get15DayOperatorReport, getWorkers } from "@/http/api"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
-import {  Operator15DayResponse, Worker } from "@/store"
+import {  Operator15DayResponse, OperatorPeriodResponse, Worker } from "@/store"
 import { CustomCombobox } from "../components/customCombobox"
 import { Button } from "./ui/button"
 
@@ -31,16 +31,12 @@ export function Operator15DayReport() {
       operatorsMap.set(operator._id, operator.name)
     })
 
-  const operatorData: Operator15DayResponse = report?.data
-
-    const allQualities = operatorData?.daily?.flatMap(day => 
-    day.qualities.map(quality => ({ ...quality, date: day.date }))
-  ) || [];
+  const operatorData: OperatorPeriodResponse = report?.data
 
   const totalMeters =
   operatorData?.daily?.reduce(
     (sum, day) =>
-      sum + day.qualities.reduce((qSum, q) => qSum + (q.meters || 0), 0),
+      sum + (day.productions?.reduce((pSum, p) => pSum + (p.meters || 0), 0) || 0),
     0
   ) || 0;
 
@@ -88,7 +84,7 @@ export function Operator15DayReport() {
               </div>
             </div>
 
-            {allQualities.length > 0 ? (
+            {operatorData.daily && operatorData.daily.length  > 0 ?(
               <>
                 <div className="hidden sm:block overflow-x-auto">
                    <div className="m-3">
@@ -97,6 +93,7 @@ export function Operator15DayReport() {
                   <table className="w-full border-collapse border text-sm">
                     <thead>
                       <tr className="bg-gray-100">
+                        <th className="border p-2 text-left">Date</th>
                         <th className="border p-2 text-left">Quality</th>
                         <th className="border p-2 text-right">Price/m</th>
                         <th className="border p-2 text-right">Meters</th>
@@ -104,22 +101,30 @@ export function Operator15DayReport() {
                       </tr>
                     </thead>
                     <tbody>
-                      {allQualities.map((quality, index) => (
-                        <tr key={index} className="hover:bg-gray-50">
+                       {operatorData.daily.flatMap((day, i) =>
+                        day.productions?.map((quality, j) => (
+                        <tr key={`${i}-${j}`} className="hover:bg-gray-50">
+                          <td className="border p-2">{day.date}</td>
                           <td className="border p-2">{quality.qualityName}</td>
                           <td className="border p-2 text-right">{quality.pricePerMeter}</td>
                           <td className="border p-2 text-right">{quality.meters}</td>
                           <td className="border p-2 text-right">{quality.amount}</td>
                         </tr>
-                      ))}
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
 
                 <div className="sm:hidden space-y-3">
-                  {allQualities.map((quality, index) => (
-                    <div key={index} className="border rounded-lg p-4 bg-white shadow-sm">
+                   {operatorData.daily.flatMap((day, i) =>
+                    day.productions?.map((quality, j) => (
+                    <div key={`${i}-${j}`} className="border rounded-lg p-4 bg-white shadow-sm">
                       <div className="grid grid-cols-2 gap-3 text-xs">
+                        <div className="space-y-1">
+                          <p className="font-semibold text-gray-600">Quality</p>
+                          <p>{day.date}</p>
+                        </div>
                         <div className="space-y-1">
                           <p className="font-semibold text-gray-600">Quality</p>
                           <p>{quality.qualityName}</p>
@@ -138,7 +143,8 @@ export function Operator15DayReport() {
                         </div>
                       </div>
                     </div>
-                  ))}
+                  ))
+                  )}
                 </div>
               </>
             ) : (
