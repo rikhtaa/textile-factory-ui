@@ -80,6 +80,7 @@ export function DailyLoomsReport() {
                       <th className="border p-2 text-left text-xs sm:text-sm">Loom Number</th>
                       <th className="border p-2 text-left text-xs sm:text-sm">Operator</th>
                       <th className="border p-2 text-left text-xs sm:text-sm">Production</th>
+                      <th className="border p-2 text-left text-xs sm:text-sm">Qualities</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -88,6 +89,9 @@ export function DailyLoomsReport() {
                         <td className="border p-2 text-xs sm:text-sm">{row.loomNumber}</td>
                         <td className="border p-2 text-xs sm:text-sm">{row.operatorName}</td>
                         <td className="border p-2 text-xs sm:text-sm">{row.meters}</td>
+                        <td className="border p-2 text-xs sm:text-sm">
+                          {row.qualities.map(q => q.qualityName).join(', ')}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

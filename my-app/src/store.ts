@@ -175,9 +175,16 @@ export interface DailyLoomsResponse {
     loomNumber: string;
     operatorName: string;
     meters: number;
+    qualities: Array<{
+      qualityName: string;
+      meters: number;
+      pricePerMeter: number;
+      amount: number;
+    }>;
   }>;
   dayTotal: number;
 }
+
 
 export interface Worker {
   _id: string;
