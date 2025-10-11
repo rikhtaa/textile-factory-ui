@@ -278,7 +278,7 @@ export interface FilterType {
 export interface ProductionTableProps {
   beamsData: BeamResponse[]
   filters: FilterType;
-  setFilters: (filter: any) => void;
+  setFilters: React.Dispatch<React.SetStateAction<FilterType>>
   productionData: ProductionRecord[];
   isLoading: boolean;
   error?: Error | null;
