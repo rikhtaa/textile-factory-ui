@@ -13,7 +13,7 @@ export const CustomCombobox = ({
 }: {
   value: string;
   onValueChange: (value: string) => void
-  items: { value: string; label: string }[];
+  items: { value: string | undefined; label: string }[];
   placeholder: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
