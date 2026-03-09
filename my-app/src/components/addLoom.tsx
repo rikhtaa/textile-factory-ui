@@ -49,7 +49,7 @@ export function AddLoom({
   }
       
     if (onFormSubmit) {
-      const { _id, ...loomData } = formData;
+      const {  _id: _, ...loomData } = formData;
        onFormSubmit(loomData as Loom);
     }
     setFormData({

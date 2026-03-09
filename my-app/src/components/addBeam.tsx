@@ -52,7 +52,7 @@ export function AddBeam({
     return;
   }
     if (onFormSubmit) {
-      const { _id, ...BeamData } = formData;
+      const {  _id: _, ...BeamData } = formData;
        onFormSubmit(BeamData as Beam);
     }
     setFormData({
