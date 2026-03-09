@@ -52,8 +52,7 @@ export function AddBeam({
     return;
   }
     if (onFormSubmit) {
-      const {  _id: _, ...BeamData } = formData;
-       onFormSubmit(BeamData as Beam);
+       onFormSubmit(formData as Beam);
     }
     setFormData({
       beamNumber: '',
