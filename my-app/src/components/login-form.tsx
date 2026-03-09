@@ -9,10 +9,9 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { login } from "../http/api"
 import { useState } from "react"
-import { email } from "zod"
 import { ApiErrorResponse, LoginFormValues, useAuthStore } from "@/store"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -25,8 +24,8 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [loginData, setLoginData] = useState<LoginFormValues>({
-    email: '',
-    password: ''
+    email: 'viewer@demo.com',
+    password: "123456"
   });
 
   const {setUser} = useAuthStore()
@@ -97,6 +96,7 @@ export function LoginForm({
                 onChange={(e)=> setLoginData({...loginData, password: e.target.value})}
                 />
               </div>
+              <p className="text-xs text-muted-foreground">Demo account pre-filled for testing </p>
               <div className="flex flex-col gap-3">
                 <Button type="submit" className="w-full" disabled={isPending}>
                   {`${isPending ? 'Logging in': 'Login'}`}
