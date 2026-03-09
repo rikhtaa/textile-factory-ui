@@ -86,7 +86,6 @@ export function BeamsTable({ beams }: { beams: Beam[] }) {
       const { data: qualitiesData } = useQuery({ queryKey: ['quality'], queryFn: getAllQualities })
       const QualitiesMap = new Map()
       qualitiesData?.data?.forEach((quality: Quality) => QualitiesMap.set(quality._id, quality.name))
-      const qualities: Quality[] = qualitiesData?.data || []
     
   return (
     <div className="border rounded-lg overflow-hidden bg-white shadow-sm">

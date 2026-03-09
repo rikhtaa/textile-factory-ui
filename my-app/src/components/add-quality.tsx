@@ -27,7 +27,6 @@ export function AddQuality({
   ...props
 }: AddWorkerProps){
   const [formData, setFormData] = useState<Quality>({
-    _id: '',
     name: '',
     pricePerMeter: undefined as unknown as number,
   });
@@ -42,11 +41,10 @@ export function AddQuality({
     return;
   }
     if (onFormSubmit) {
-      const { _id, ...qualityData } = formData;
+      const { ...qualityData } = formData;
        onFormSubmit(qualityData as Quality);
     }
     setFormData({
-      _id: '',
       name: '',
       pricePerMeter: undefined as unknown as number,
     });

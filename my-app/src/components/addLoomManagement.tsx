@@ -17,7 +17,6 @@ import { Controller, useForm } from "react-hook-form"
 
 
 interface AddLoomProps extends React.ComponentProps<"div"> {
-  onFormSubmit?: (formData: Loom) => void;
   isPending: boolean | undefined
   beamsData: Beam[]
   qualitiesData: Quality[]
@@ -27,7 +26,6 @@ interface AddLoomProps extends React.ComponentProps<"div"> {
 
 export function AddLoomManagement({
   className,
-  onFormSubmit,
   isPending, 
   beamsData,
   qualitiesData,

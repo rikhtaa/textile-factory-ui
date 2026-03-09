@@ -16,7 +16,7 @@ export function AddProduction({
   className,
   onFormSubmit,
   isPending,
-  onSucess,
+  // onSucess,
   beamsData,
   ...props
 }: AddProductionProps) {

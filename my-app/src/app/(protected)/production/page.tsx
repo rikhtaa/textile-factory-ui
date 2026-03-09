@@ -18,7 +18,7 @@ export default function Page() {
       beamId: ""
     })
   const { data: beamsData } = useQuery({ queryKey: ['beam'], queryFn: getAllBeams })  
-  const {mutate: userMutate, error, isSuccess, isPending} = useMutation({
+  const {mutate: userMutate, error, isPending} = useMutation({
       mutationKey: ['produciton'],
       mutationFn: createProduction, 
       onSuccess: ()=>{
@@ -57,7 +57,7 @@ export default function Page() {
      <div className='w-full flex items-center justify-center overflow-hidden'>
           <div className='flex flex-col gap-7 w-[85%] py-[1rem]'>
             <h2 className='text-black text-4xl font-bold'>Production</h2>
-            <AddProduction beamsData={beamsData?.data || []}   onFormSubmit={handleFormData}  onSucess={isSuccess} isPending={isPending} />
+            <AddProduction beamsData={beamsData?.data || []}   onFormSubmit={handleFormData}  isPending={isPending} />
             <ProductionTable 
             filters={filters}
             setFilters={setFilters}

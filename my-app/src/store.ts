@@ -262,7 +262,6 @@ export type WorkerCredentails={
 
 export interface AddProductionProps extends React.ComponentProps<"div"> {
   onFormSubmit?: (formData: CreateProduction) => void;
-  onSucess: boolean | undefined
   isPending: boolean | undefined
   beamsData: Beam[]
 }

@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { get15DayOperatorReport, getWorkers } from "@/http/api"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
-import {  Operator15DayResponse, OperatorPeriodResponse, Worker } from "@/store"
+import {  OperatorPeriodResponse, Worker } from "@/store"
 import { CustomCombobox } from "../components/customCombobox"
 import { Button } from "./ui/button"
 
